@@ -10,15 +10,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        branch:
-          - codex/fix-cursor-udp-ack
-          - codex/ipad-keyboard-trackpad
-          - codex/display-mode-controls
-          - codex/cursor-refresh
+        include:
+          - branch: codex/ipad-keyboard-trackpad
+            sha: 2c606a847a734a1c7f36d4b9e5b4d307c53b2c26
+          - branch: codex/display-mode-controls
+            sha: 6d4962f5968e38208916c2132447f705b3ef323f
+          - branch: codex/shared-settings-contribution
+            sha: f64f286621b7d3f5fc13828028fa219158943d57
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ matrix.branch }}
+          ref: ${{ matrix.sha }}
           persist-credentials: false
       - name: Record exact revision
         run: git rev-parse HEAD
