@@ -1,0 +1,44 @@
+name: Contribution validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: ${{ matrix.branch }}
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        branch:
+          - codex/fix-cursor-udp-ack
+          - codex/ipad-keyboard-trackpad
+          - codex/display-mode-controls
+          - codex/cursor-refresh
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.branch }}
+          persist-credentials: false
+      - name: Record exact revision
+        run: git rev-parse HEAD
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+      - name: Run macOS tests
+        run: >-
+          xcodebuild test -project OpenSidecar.xcodeproj
+          -scheme OpenSidecarMac -destination 'platform=macOS'
+          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: Build macOS receiver
+        run: >-
+          xcodebuild build -project OpenSidecar.xcodeproj
+          -scheme OpenSidecarMacReceiver -destination 'platform=macOS'
+          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: Build iOS and iPadOS receiver
+        run: >-
+          xcodebuild build -project OpenSidecar.xcodeproj
+          -scheme OpenSidecariOS -configuration Release
+          -destination 'generic/platform=iOS'
+          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
