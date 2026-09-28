@@ -1,5 +1,6 @@
 import UIKit
 import GameController
+import Combine
 
 /// Foreground-only hardware input, separate from finger/Pencil sampling. There
 /// is no key-content logging, hidden text field, or iPad text-composition proxy.
@@ -20,10 +21,17 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
     private var clickCount: [Int: Int] = [:]
     private var movementSinceClick = 0.0
     private var currentModifiers: UInt = 0
+    private var keyboardMapping: HardwareKeyboardMapping = .standard
     private var inactiveObserver: NSObjectProtocol?
+    private var receiverState: AnyCancellable?
+    private var focusGeneration = 0
 
     private var canForward: Bool {
-        inputEnabled && window != nil && UIApplication.shared.applicationState == .active
+        inputEnabled && window?.isKeyWindow == true
+            && window?.windowScene?.activationState == .foregroundActive
+            && UIApplication.shared.applicationState == .active
+            && window?.rootViewController?.presentedViewController == nil
+            && hardwareReceiver?.connected == true
             && hardwareReceiver?.macSupportsHardwareInput == true
     }
 
@@ -59,16 +67,24 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
                 self?.refreshHardwareFocus(rebind: true)
             })
         }
-        for name in [UIApplication.didBecomeActiveNotification, UIScene.didActivateNotification] {
+        for name in [UIApplication.didBecomeActiveNotification, UIScene.didActivateNotification,
+                     UIWindow.didBecomeKeyNotification] {
             mouseObservers.append(NotificationCenter.default.addObserver(
                 forName: name, object: nil, queue: .main
             ) { [weak self] _ in
-                self?.refreshHardwareFocus(rebind: true)
+                self?.refreshInputAvailability(rebind: true)
             })
         }
         inactiveObserver = NotificationCenter.default.addObserver(
             forName: UIApplication.willResignActiveNotification, object: nil, queue: .main
         ) { [weak self] _ in self?.releaseHardwareInput() }
+        mouseObservers.append(NotificationCenter.default.addObserver(
+            forName: UIScene.willDeactivateNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self, let scene = notification.object as? UIScene,
+                  scene === self.window?.windowScene else { return }
+            self.releaseHardwareInput()
+        })
     }
 
     required init?(coder: NSCoder) { fatalError("Programmatic video view only") }
@@ -80,13 +96,39 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
     }
 
     func configureHardwareInput(receiver: StreamReceiver, enabled: Bool) {
+        let mapping: HardwareKeyboardMapping = UserDefaults.standard.bool(forKey: "swapCommandAndOption")
+            ? .commandOption : .standard
+        if keyboardMapping != mapping {
+            // Release using the old mapping before accepting a different one.
+            releaseHardwareInput()
+            keyboardMapping = mapping
+        }
+        let receiverChanged = hardwareReceiver !== receiver
+        if receiverChanged { releaseHardwareInput() }
         hardwareReceiver = receiver
         inputRequested = enabled
-        let effective = enabled && receiver.macSupportsHardwareInput
+        if receiverChanged {
+            // The welcome/version can arrive after this UIView is created.
+            // SwiftUI may skip updateUIView when its reference-valued receiver
+            // and other arguments are unchanged. Observe readiness directly.
+            receiverState = Publishers.CombineLatest3(
+                receiver.$connected, receiver.$macProtocolVersion,
+                receiver.$videoSize.map { $0 != .zero })
+                .removeDuplicates { $0.0 == $1.0 && $0.1 == $1.1 && $0.2 == $1.2 }
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in self?.refreshInputAvailability(rebind: true) }
+        }
+        refreshInputAvailability(rebind: receiverChanged)
+    }
+
+    private func refreshInputAvailability(rebind: Bool) {
+        guard let receiver = hardwareReceiver else { return }
+        let effective = inputRequested && receiver.connected && receiver.videoSize != .zero
+            && receiver.macSupportsHardwareInput
         let changed = effective != inputEnabled
         inputEnabled = effective
         if effective {
-            refreshHardwareFocus(rebind: changed || relativePeerBound != receiver.macSupportsRelativePointer)
+            refreshHardwareFocus(rebind: rebind || changed || relativePeerBound != receiver.macSupportsRelativePointer)
         } else if changed {
             releaseHardwareInput()
             unbindMice()
@@ -94,16 +136,17 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
         }
     }
 
-    private func updatePointerLock() {
-        (window?.rootViewController as? InputHostingController)?.wantsPointerLock =
+    private func updatePointerLock(force: Bool = false) {
+        let controller = window?.rootViewController as? InputHostingController
+        controller?.wantsPointerLock =
             canForward && hardwareReceiver?.macSupportsRelativePointer == true && !mice.isEmpty
+        if force { controller?.setNeedsUpdateOfPrefersPointerLocked() }
     }
 
     private func refreshHardwareFocus(rebind: Bool) {
         guard inputEnabled else { return }
-        if rebind { bindRelativeMice() }
         updatePointerLock()
-        acquireKeyboardFocus()
+        if rebind || !isFirstResponder { acquireKeyboardFocus(rebind: rebind) }
     }
 
     override var canBecomeFirstResponder: Bool { canForward }
@@ -111,7 +154,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
     override func didMoveToWindow() {
         super.didMoveToWindow()
         if window == nil { releaseHardwareInput() }
-        else { refreshHardwareFocus(rebind: true) }
+        else { refreshInputAvailability(rebind: true) }
     }
 
     override func resignFirstResponder() -> Bool {
@@ -120,21 +163,49 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
         return result
     }
 
-    private func acquireKeyboardFocus() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self, self.canForward else { return }
-            self.updatePointerLock()
-            if !self.isFirstResponder { self.becomeFirstResponder() }
-            let ready = "responder=\(self.isFirstResponder), rawMouse=\(!self.mice.isEmpty)"
-            if ready != self.lastReadyState {
-                self.lastReadyState = ready
-                Log.info("hardware input ready: \(ready)")
+    private func acquireKeyboardFocus(rebind: Bool = false) {
+        focusGeneration &+= 1
+        let generation = focusGeneration
+        var rebound = false
+        // UIKit activation, key-window selection and SwiftUI sheet dismissal
+        // finish on different turns. Retry briefly; never steal focus from a
+        // sheet or a different app, and cancel stale attempts on input release.
+        for delay in [0.0, 0.12, 0.35, 0.8, 1.6] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self, self.focusGeneration == generation else { return }
+                guard self.canForward else {
+                    if delay == 1.6 {
+                        Log.info("hardware focus deferred: enabled=\(self.inputEnabled), keyWindow=\(self.window?.isKeyWindow == true), activeScene=\(self.window?.windowScene?.activationState == .foregroundActive), modal=\(self.window?.rootViewController?.presentedViewController != nil)")
+                    }
+                    return
+                }
+                // Activation can arrive before the window becomes eligible.
+                // Rebind at the first eligible attempt, not only in the early
+                // notification callback where canForward may still be false.
+                if (rebind && !rebound)
+                    || (self.hardwareReceiver?.macSupportsRelativePointer == true && self.mice.isEmpty) {
+                    self.bindRelativeMice()
+                    rebound = true
+                }
+                self.updatePointerLock(force: true)
+                if !self.isFirstResponder { self.becomeFirstResponder() }
+                let locked = self.window?.windowScene?.pointerLockState?.isLocked == true
+                let ready = "responder=\(self.isFirstResponder), rawMouse=\(!self.mice.isEmpty), pointerLocked=\(locked)"
+                if ready != self.lastReadyState {
+                    self.lastReadyState = ready
+                    Log.info("hardware input ready: \(ready)")
+                }
+                if self.isFirstResponder && (self.mice.isEmpty || locked) {
+                    self.focusGeneration &+= 1
+                }
             }
         }
     }
 
     func releaseHardwareInput() {
-        if let cancelled = scrollGesture.cancel(modifiers: currentModifiers) {
+        focusGeneration &+= 1
+        lastReadyState = ""
+        if let cancelled = scrollGesture.cancel(modifiers: keyboardMapping.modifiers(currentModifiers)) {
             hardwareReceiver?.sendPreciseScroll(cancelled)
         }
         pressedKeys.removeAll()
@@ -186,7 +257,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
                     currentModifiers |= bit
                 } else { currentModifiers &= ~bit }
             }
-            hardwareReceiver?.sendHardwareKey(input)
+            hardwareReceiver?.sendHardwareKey(keyboardMapping.key(input))
         }
         return unhandled
     }
@@ -209,7 +280,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
             hardwareReceiver?.sendRelativePointer(.init(
                 phase: phase, dx: 0, dy: 0, button: pointerButton ?? 1,
                 clicks: min(max(touch.tapCount, 1), 3),
-                mod: UInt(event?.modifierFlags.rawValue ?? 0)))
+                mod: keyboardMapping.modifiers(UInt(event?.modifierFlags.rawValue ?? 0))))
             if phase == .ended || phase == .cancelled { pointerButton = nil }
             return true
         }
@@ -223,7 +294,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
         let input = HardwareInput.Pointer(
             phase: phase, x: point.x, y: point.y, button: pointerButton ?? 1,
             clicks: min(max(touch.tapCount, 1), 3),
-            mod: UInt(event?.modifierFlags.rawValue ?? 0))
+            mod: keyboardMapping.modifiers(UInt(event?.modifierFlags.rawValue ?? 0)))
         hardwareReceiver?.sendHardwarePointer(input)
         if phase == .ended || phase == .cancelled { pointerButton = nil }
         return true
@@ -237,7 +308,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
             if gesture.state == .changed, let previous = lastHoverPoint {
                 hardwareReceiver?.sendRelativePointer(.init(
                     phase: .moved, dx: Double(point.x - previous.x), dy: Double(point.y - previous.y),
-                    button: pointerButton ?? 1, clicks: 1, mod: UInt(gesture.modifierFlags.rawValue)))
+                    button: pointerButton ?? 1, clicks: 1, mod: keyboardMapping.modifiers(UInt(gesture.modifierFlags.rawValue))))
             }
             lastHoverPoint = gesture.state == .ended || gesture.state == .cancelled ? nil : point
             return
@@ -246,7 +317,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
               let point = normalizeHardwarePoint?(gesture.location(in: self)) else { return }
         hardwareReceiver?.sendHardwarePointer(.init(
             phase: .moved, x: point.x, y: point.y, button: pointerButton ?? 1,
-            clicks: 1, mod: UInt(gesture.modifierFlags.rawValue)))
+            clicks: 1, mod: keyboardMapping.modifiers(UInt(gesture.modifierFlags.rawValue))))
     }
 
     @objc private func scrolled(_ gesture: UIPanGestureRecognizer) {
@@ -264,7 +335,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
                let point = normalizeHardwarePoint?(gesture.location(in: self)) {
                 hardwareReceiver?.sendHardwarePointer(.init(
                     phase: .moved, x: point.x, y: point.y, button: 1,
-                    clicks: 1, mod: UInt(gesture.modifierFlags.rawValue)))
+                    clicks: 1, mod: keyboardMapping.modifiers(UInt(gesture.modifierFlags.rawValue))))
             }
         }
         let translation = gesture.translation(in: self)
@@ -273,7 +344,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
             translation: .init(dx: Double(translation.x), dy: Double(translation.y)),
             speed: savedSpeed("trackpadScrollSpeed", default: TrackpadTuning.defaultScrollSpeed),
             reversed: UserDefaults.standard.bool(forKey: "trackpadReverseScroll"),
-            modifiers: UInt(gesture.modifierFlags.rawValue)) else { return }
+            modifiers: keyboardMapping.modifiers(UInt(gesture.modifierFlags.rawValue))) else { return }
         hardwareReceiver?.sendPreciseScroll(input)
 
     }
@@ -312,7 +383,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
                 self.movementSinceClick += hypot(delta.dx, delta.dy)
                 self.hardwareReceiver?.sendRelativePointer(.init(
                     phase: .moved, dx: delta.dx, dy: delta.dy,
-                    button: 1, clicks: 1, mod: self.currentModifiers))
+                    button: 1, clicks: 1, mod: self.keyboardMapping.modifiers(self.currentModifiers)))
             }
             for (number, button) in [(1, input.leftButton), (2, input.rightButton), (3, input.middleButton)] {
                 button?.pressedChangedHandler = { [weak self] _, _, down in
@@ -327,7 +398,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
                     }
                     self.hardwareReceiver?.sendRelativePointer(.init(
                         phase: down ? .began : .ended, dx: 0, dy: 0, button: number,
-                        clicks: self.clickCount[number] ?? 1, mod: self.currentModifiers))
+                        clicks: self.clickCount[number] ?? 1, mod: self.keyboardMapping.modifiers(self.currentModifiers)))
                 }
             }
             // UIKit is the sole scroll producer, including while GCMouse

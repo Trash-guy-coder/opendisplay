@@ -99,3 +99,13 @@ The source retains upstream GPL-3.0 licensing and attribution.
 
 New input controls use `Shared/InputStrings.xcstrings` (English and zh-Hans).
 This is a scoped contribution toward #269, not full product localization.
+
+## Optional physical Command/Option swap
+
+An opt-in setting swaps left/right Command and Option usages and modifier snapshots consistently across keyboard, pointer, drag and scroll events. It defaults off; switching it releases old held state first. While on, use Option-Tab / Option-Space for Mac app switching / search and Option-C/V for Mac copy/paste. Original Command-Tab / Command-Space remain iPadOS shortcuts. This is an alternative mapping, not a system keyboard grab.
+
+## Foreground and reconnect readiness
+
+The UIKit view directly observes connection, negotiated protocol and video readiness, including a welcome that arrives after view construction. Scene changes preserve the receiver's root identity. Activation/key-window transitions retry focus and pointer lock briefly; mouse rebinding happens at the first eligible attempt. Background/modal/key-window guards prevent focus stealing and stale attempts are cancelled on input release.
+
+The combined local preview passed two real-device switch-away/back cycles without termination or window resizing; both restored first responder, raw mouse and pointer lock. The user subsequently confirmed the other input/localization issues were resolved. Platform-reserved physical shortcuts are still explicitly excluded.

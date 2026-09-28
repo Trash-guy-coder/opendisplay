@@ -154,6 +154,7 @@ targets:
       - MacTests
       - Mac/HardwareInputInjector.swift
       - Shared/HardwareInput.swift
+      - Shared/HardwareKeyboardMapping.swift
       - Shared/TrackpadTuning.swift
       - Shared/InputStrings.xcstrings
       - Mac/DisplayArrangement.swift

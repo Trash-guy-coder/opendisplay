@@ -56,6 +56,7 @@ final class InputHostingController: UIHostingController<AnyView> {
 final class ReceiverSceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     private var controller: InputHostingController?
+    private let sceneState = ReceiverSceneState()
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
                options: UIScene.ConnectionOptions) {
         Log.info("receiver scene connected: \(type(of: scene))")
@@ -64,7 +65,7 @@ final class ReceiverSceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     func install(in scene: UIWindowScene) {
         let controller = InputHostingController(rootView: AnyView(
-            ReceiverScreen().environment(\.scenePhase, .inactive)))
+            ReceiverSceneRoot(state: sceneState)))
         let window = UIWindow(windowScene: scene)
         window.rootViewController = controller
         self.controller = controller
@@ -73,11 +74,21 @@ final class ReceiverSceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     func updatePhase(_ phase: ScenePhase) {
         if phase != .active { controller?.wantsPointerLock = false }
-        controller?.rootView = AnyView(ReceiverScreen().environment(\.scenePhase, phase))
+        sceneState.phase = phase
     }
     func sceneDidBecomeActive(_ scene: UIScene) { updatePhase(.active) }
     func sceneWillResignActive(_ scene: UIScene) { updatePhase(.inactive) }
     func sceneDidEnterBackground(_ scene: UIScene) { updatePhase(.background) }
+}
+
+/// Keep the root view identity and receiver model stable across app switching.
+final class ReceiverSceneState: ObservableObject {
+    @Published var phase: ScenePhase = .inactive
+}
+
+struct ReceiverSceneRoot: View {
+    @ObservedObject var state: ReceiverSceneState
+    var body: some View { ReceiverScreen().environment(\.scenePhase, state.phase) }
 }
 
 // MARK: - Shake to open settings
@@ -139,8 +150,7 @@ struct ReceiverScreen: View {
                                    receiver: model.receiver,
                                    useMetal: metalRenderer,
                                    hardwareInputEnabled: hardwareInputEnabled && !showSettings
-                                       && !showOnboarding && requiredUpdate == nil
-                                       && scenePhase == .active)
+                                       && !showOnboarding && requiredUpdate == nil)
                         .id(metalRenderer)   // rebuild the layer tree on toggle
                         .ignoresSafeArea()
                     if showAnalytics {
@@ -412,6 +422,7 @@ struct SettingsView: View {
 
                 Section {
                     Toggle(String(localized: "Keyboard & trackpad input", table: "InputStrings"), isOn: $hardwareInputEnabled)
+                    KeyboardShortcutSettingsView()
                     TrackpadSettingsView()
                 } header: {
                     Text(String(localized: "Input", table: "InputStrings"))
@@ -560,6 +571,22 @@ private struct DeviceNameField: View {
             .autocorrectionDisabled()
             .focused($focused)
             .onChange(of: deviceName) { name in onChange(name) }
+    }
+}
+
+/// Keep shortcut preferences separate from high-frequency receiver statistics.
+struct KeyboardShortcutSettingsView: View {
+    @AppStorage("swapCommandAndOption") private var swapCommandAndOption = false
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle(String(localized: "Mac shortcut mode", table: "InputStrings"), isOn: $swapCommandAndOption)
+            Text(String(localized: "Swap Command and Option only while controlling your Mac. Turn off to restore the usual keys. iPadOS may still reserve its own shortcuts.", table: "InputStrings"))
+                .font(.caption).foregroundStyle(.secondary)
+            if swapCommandAndOption {
+                Text(String(localized: "Use Option instead of Command for Mac shortcuts: Option-Tab switches Mac apps; Option-Space opens Mac search; Option-C/V copies/pastes. Use Command for Mac Option shortcuts. Shift and Control keep their usual roles.", table: "InputStrings"))
+                    .font(.caption)
+            }
+        }
     }
 }
 
