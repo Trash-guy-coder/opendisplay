@@ -150,6 +150,7 @@ targets:
     deploymentTarget: "14.0"
     sources:
       - MacTests
+      - Mac/CursorSpriteStabilizer.swift
       - Mac/DisplayArrangement.swift
       - Mac/StreamConfiguration.swift
       - Mac/VirtualCanvasSizing.swift
@@ -187,6 +188,7 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen: {}
         UIRequiresFullScreen: true
+        CADisableMinimumFrameDurationOnPhone: true
         NSLocalNetworkUsageDescription: OpenDisplay advertises itself on the local network so your Mac can connect over WiFi.
         NSBonjourServices: ["_opensidecar._tcp"]
         UISupportedInterfaceOrientations:
