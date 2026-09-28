@@ -1,0 +1,150 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Keyboard & trackpad input": {
+      "comment": "iPad receiver toggle for forwarding physical input to the Mac.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard & trackpad input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键盘与触控板输入"
+          }
+        }
+      }
+    },
+    "Input": {
+      "comment": "Section heading for hardware keyboard and trackpad controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入"
+          }
+        }
+      }
+    },
+    "Input goes to your Mac only while this app is streaming in the foreground. Use the keyboard layout and input method selected on your Mac. Some iPadOS system shortcuts stay on the iPad.": {
+      "comment": "Hardware input scope, IME ownership and system shortcut limitation.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input goes to your Mac only while this app is streaming in the foreground. Use the keyboard layout and input method selected on your Mac. Some iPadOS system shortcuts stay on the iPad."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只有此应用在前台传输画面时，输入才会发送到 Mac。请使用 Mac 上选择的键盘布局和输入法。部分 iPadOS 系统快捷键仍由 iPad 处理。"
+          }
+        }
+      }
+    },
+    "Keyboard and trackpad forwarding needs an updated Mac app. Touch input remains available with older Mac apps.": {
+      "comment": "Compatibility help when the connected sender lacks the optional hardware-input capability.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard and trackpad forwarding needs an updated Mac app. Touch input remains available with older Mac apps."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键盘和触控板转发需要更新 Mac 端应用。旧版 Mac 应用仍可接收触摸输入。"
+          }
+        }
+      }
+    },
+    "Pointer speed": {
+      "comment": "Trackpad pointer movement gain. Also used as the slider accessibility label.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pointer speed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指针速度"
+          }
+        }
+      }
+    },
+    "Scroll speed": {
+      "comment": "Two-finger scroll gain, independent of pointer speed. Also an accessibility label.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scroll speed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滚动速度"
+          }
+        }
+      }
+    },
+    "Reverse scroll direction": {
+      "comment": "Reverse both scroll axes; does not change pointer movement or OS preferences.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reverse scroll direction"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "反转滚动方向"
+          }
+        }
+      }
+    },
+    "Reset trackpad settings": {
+      "comment": "Restore pointer gain, scroll gain and scroll direction to app defaults.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset trackpad settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重置触控板设置"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
