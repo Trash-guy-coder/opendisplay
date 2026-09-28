@@ -162,6 +162,150 @@
           }
         }
       }
+    },
+    "Ultra detail": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ultra detail"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "超清（高码率）"
+          }
+        }
+      }
+    },
+    "Best": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清晰（标准码率）"
+          }
+        }
+      }
+    },
+    "Balanced": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanced"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "均衡"
+          }
+        }
+      }
+    },
+    "Fast": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fast"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "流畅"
+          }
+        }
+      }
+    },
+    "Full resolution with a standard bitrate.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full resolution with a standard bitrate."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留完整分辨率，使用标准码率。"
+          }
+        }
+      }
+    },
+    "Lower capture resolution for less latency and bandwidth.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lower capture resolution for less latency and bandwidth."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低传输分辨率，减少延迟和带宽占用。"
+          }
+        }
+      }
+    },
+    "Lowest latency and bandwidth, with a softer image. Good for WiFi.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lowest latency and bandwidth, with a softer image. Good for WiFi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "优先降低延迟和带宽占用，画面略柔和，适合网络较慢时使用。"
+          }
+        }
+      }
+    },
+    "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留完整分辨率，并提高编码码率（目标 24–80 Mbps）。带宽占用更高，建议先在稳定连接下选择 60 Hz。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -430,7 +430,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         let canvasPixels = resolution.pixels(nativeWidth: info.pixelsWide, nativeHeight: info.pixelsHigh)
         guard let canvasPlan = VirtualCanvasSizing.plan(
             pixelsWide: canvasPixels.width, pixelsHigh: canvasPixels.height,
-            pixelsPerPoint: resolution == .native ? 2 : 1) else {
+            pixelsPerPoint: resolution.pixelsPerPoint) else {
             throw NSError(domain: "MacSender", code: 7,
                           userInfo: [NSLocalizedDescriptionKey: "the receiver reported an invalid display size"])
         }
@@ -504,7 +504,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
                     // the product, not the serial — bumping both escapes
                     // either keying.
                     return VirtualDisplay(name: displayName, refreshRate: Double(refreshRate),
-                                          pixelsPerPoint: resolution == .native ? 2 : 1,
+                                          pixelsPerPoint: resolution.pixelsPerPoint,
                                           pointsWide: pointsWide, pointsHigh: pointsHigh,
                                           descriptorMaxPixelsPerAxis: canvasPlan.descriptorMaxPixelsPerAxis,
                                           sizeInMillimeters: mm,
@@ -844,7 +844,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
             legacyCeiling = nil
         }
         let outputPixels = mode == .mirror
-            ? resolution.pixels(nativeWidth: sourcePixelsWide, nativeHeight: sourcePixelsHigh)
+            ? resolution.mirrorPixels(source: PixelSize(width: sourcePixelsWide, height: sourcePixelsHigh))
             : PixelSize(width: sourcePixelsWide, height: sourcePixelsHigh)
         let selected = try H264StreamConfiguration.make(
             source: outputPixels,
@@ -2210,7 +2210,8 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
                              value: configuration.bitrate as CFNumber)
         VTSessionSetProperty(encoder, key: kVTCompressionPropertyKey_ExpectedFrameRate,
                              value: configuration.framesPerSecond as CFNumber)
-        VTSessionSetProperty(encoder, key: kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality, value: kCFBooleanTrue)
+        VTSessionSetProperty(encoder, key: kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality,
+                             value: quality == .ultra ? kCFBooleanFalse : kCFBooleanTrue)
         VTCompressionSessionPrepareToEncodeFrames(encoder)
         Log.info("encoder ready: \(width)x\(height) H.264 \(configuration.bitrate / 1_000_000)Mbps @\(configuration.framesPerSecond)fps quality=\(quality.rawValue) lowLatencyRC=\(lowLatency && !usedFallback)\(usedFallback ? " (fallback)" : "")")
     }
