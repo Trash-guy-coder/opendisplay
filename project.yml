@@ -152,9 +152,6 @@ targets:
     deploymentTarget: "14.0"
     sources:
       - MacTests
-      - Mac/DisplayOptions.swift
-      - Shared/DisplayLocalization.swift
-      - Shared/DisplayStrings.xcstrings
       - Mac/DisplayArrangement.swift
       - Mac/StreamConfiguration.swift
       - Mac/VirtualCanvasSizing.swift
@@ -162,6 +159,9 @@ targets:
       - Mac/LogPolicies.swift
       - Shared/Protocol.swift
       - Shared/LogSnapshot.swift
+      - Mac/DisplayOptions.swift
+      - Shared/DisplayLocalization.swift
+      - Shared/DisplayStrings.xcstrings
       - MacReceiver/FullscreenPreference.swift
     settings:
       base:
