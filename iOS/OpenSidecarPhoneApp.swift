@@ -88,8 +88,9 @@ final class ReceiverSceneState: ObservableObject {
 }
 
 struct ReceiverSceneRoot: View {
+    @ObservedObject private var language = AppLanguage.shared
     @ObservedObject var state: ReceiverSceneState
-    var body: some View { ReceiverScreen().environment(\.scenePhase, state.phase) }
+    var body: some View { ReceiverScreen().environment(\.scenePhase, state.phase).environment(\.locale, language.locale) }
 }
 
 // MARK: - Shake to open settings
@@ -274,7 +275,7 @@ struct IdleView: View {
                     Circle()
                         .fill(receiver.connected ? Color.green : Color.orange)
                         .frame(width: 8, height: 8)
-                    Text(receiver.status)
+                    Text(ReceiverLocalization.status(receiver.status))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
@@ -385,6 +386,8 @@ struct OnboardingView: View {
 // MARK: - Settings / help sheet
 
 struct SettingsView: View {
+    @ObservedObject private var preferences = ReceiverSettingsStore.shared
+    @ObservedObject private var language = AppLanguage.shared
     @AppStorage("hardwareInputEnabled") private var hardwareInputEnabled = true
     @ObservedObject var receiver: StreamReceiver
     @Environment(\.dismiss) private var dismiss
@@ -398,13 +401,22 @@ struct SettingsView: View {
     var body: some View {
         AdaptiveNavigation {
             Form {
+                Section(AppLanguage.text("Language")) { AppLanguagePicker() }
+                Section(AppLanguage.text("Display & picture quality")) {
+                    if let settings = receiver.remoteSenderSettings {
+                        DisplayPreferenceControls(settings: settings, change: receiver.requestSenderSettings)
+                    } else {
+                        Text(AppLanguage.text("Connect an updated Mac app to adjust display settings here."))
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 Section("Status") {
-                    LabeledRow("Listening", value: "Port 9000")
+                    LabeledRow("Listening", value: ReceiverLocalization.text("Port 9000"))
                     LabeledRow("Connection",
-                               value: receiver.connected ? "Connected" : "Waiting for Mac")
+                               value: ReceiverLocalization.text(receiver.connected ? "Connected" : "Waiting for Mac"))
                     if receiver.videoSize != .zero {
                         LabeledRow("Stream",
-                                   value: "\(Int(receiver.videoSize.width))×\(Int(receiver.videoSize.height)) @ \(receiver.fps) fps")
+                                   value: ReceiverLocalization.format("%d×%d @ %d fps", Int(receiver.videoSize.width), Int(receiver.videoSize.height), receiver.fps))
                     }
                 }
 
@@ -422,20 +434,17 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Toggle(String(localized: "Keyboard & trackpad input", table: "InputStrings"), isOn: $hardwareInputEnabled)
-                    KeyboardShortcutSettingsView()
-                    TrackpadSettingsView()
+                    ReceiverInputControls(settings: preferences.values, change: preferences.apply)
                 } header: {
-                    Text(String(localized: "Input", table: "InputStrings"))
+                    Text(AppLanguage.text("Input"))
                 } footer: {
                     Text(receiver.macSupportsHardwareInput
-                         ? String(localized: "Input goes to your Mac only while this app is streaming in the foreground. Use the keyboard layout and input method selected on your Mac. Some iPadOS system shortcuts stay on the iPad.", table: "InputStrings")
-                         : String(localized: "Keyboard and trackpad forwarding needs an updated Mac app. Touch input remains available with older Mac apps.", table: "InputStrings"))
+                         ? AppLanguage.text("Input goes to your Mac only while this app is streaming in the foreground. Use the keyboard layout and input method selected on your Mac. Some iPadOS system shortcuts stay on the iPad.")
+                         : AppLanguage.text("Keyboard and trackpad forwarding needs an updated Mac app. Touch input remains available with older Mac apps."))
                 }
 
                 Section {
-                    Toggle("Performance overlay", isOn: $showAnalytics)
-                    Toggle("Metal renderer (experimental)", isOn: $metalRenderer)
+                    ReceiverPerformanceControls(settings: preferences.values, change: preferences.apply)
                 } header: {
                     Text("Analytics")
                 } footer: {
@@ -528,7 +537,7 @@ struct AdaptiveNavigation<Content: View>: View {
 struct LabeledRow: View {
     let title: String
     let value: String
-    init(_ title: String, value: String) { self.title = title; self.value = value }
+    init(_ title: String, value: String) { self.title = ReceiverLocalization.text(title); self.value = value }
     var body: some View {
         if #available(iOS 16, *) {
             LabeledContent(title, value: value)
@@ -575,43 +584,6 @@ private struct DeviceNameField: View {
     }
 }
 
-/// Keep shortcut preferences separate from high-frequency receiver statistics.
-struct KeyboardShortcutSettingsView: View {
-    @AppStorage("swapCommandAndOption") private var swapCommandAndOption = false
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Toggle(String(localized: "Mac shortcut mode", table: "InputStrings"), isOn: $swapCommandAndOption)
-            Text(String(localized: "Swap Command and Option only while controlling your Mac. Turn off to restore the usual keys. iPadOS may still reserve its own shortcuts.", table: "InputStrings"))
-                .font(.caption).foregroundStyle(.secondary)
-            if swapCommandAndOption {
-                Text(String(localized: "Use Option instead of Command for Mac shortcuts: Option-Tab switches Mac apps; Option-Space opens Mac search; Option-C/V copies/pastes. Use Command for Mac Option shortcuts. Shift and Control keep their usual roles.", table: "InputStrings"))
-                    .font(.caption)
-            }
-        }
-    }
-}
-
-/// Own storage independently of receiver statistics, so slider drags keep focus.
-struct TrackpadSettingsView: View {
-    @AppStorage("trackpadPointerSpeed") private var pointerSpeed = TrackpadTuning.defaultPointerSpeed
-    @AppStorage("trackpadScrollSpeed") private var scrollSpeed = TrackpadTuning.defaultScrollSpeed
-    @AppStorage("trackpadReverseScroll") private var reverseScroll = false
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack { Text(String(localized: "Pointer speed", table: "InputStrings")); Spacer(); Text(String(format: "%.2f×", pointerSpeed)).monospacedDigit() }
-            Slider(value: $pointerSpeed, in: 0.5...4, step: 0.05).accessibilityLabel(String(localized: "Pointer speed", table: "InputStrings"))
-            HStack { Text(String(localized: "Scroll speed", table: "InputStrings")); Spacer(); Text(String(format: "%.2f×", scrollSpeed)).monospacedDigit() }
-            Slider(value: $scrollSpeed, in: 0.15...2, step: 0.05).accessibilityLabel(String(localized: "Scroll speed", table: "InputStrings"))
-            Toggle(String(localized: "Reverse scroll direction", table: "InputStrings"), isOn: $reverseScroll)
-            Button(String(localized: "Reset trackpad settings", table: "InputStrings")) {
-                pointerSpeed = TrackpadTuning.defaultPointerSpeed
-                scrollSpeed = TrackpadTuning.defaultScrollSpeed
-                reverseScroll = false
-            }
-        }
-    }
-}
-
 // MARK: - Model
 
 @MainActor
@@ -637,6 +609,17 @@ final class ReceiverModel: ObservableObject {
         }
         let savedName = UserDefaults.standard.string(forKey: "deviceName")
         receiver.serviceName = (savedName?.isEmpty == false) ? savedName! : UIDevice.current.name
+        let preferences = ReceiverSettingsStore.shared
+        receiver.receiverSettingsProvider = { preferences.values }
+        receiver.onReceiverSettingsChange = { [weak preferences] patch in preferences?.apply(patch) }
+        preferences.$values.removeDuplicates().dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak receiver] settings in
+                guard let receiver else { return }
+                if let name = settings.deviceName, name != receiver.serviceName { receiver.setServiceName(name) }
+                receiver.publishReceiverSettings()
+            }
+            .store(in: &cancellables)
         receiver.objectWillChange
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.objectWillChange.send() }
@@ -848,7 +831,6 @@ struct VideoLayerView: UIViewRepresentable {
         private var cursorNormSize = CGSize.zero
         private var cursorNorm = CGPoint(x: 0.5, y: 0.5)
         private var cursorVisible = false
-
         private var lastLoggedLayout = ""
 
         override func layoutSubviews() {

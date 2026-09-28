@@ -33,19 +33,19 @@ enum StreamQuality: String, CaseIterable {
 
     var label: String {
         switch self {
-        case .ultra: return String(localized: "Ultra detail", table: "DisplayStrings")
-        case .best: return String(localized: "Best", table: "DisplayStrings")
-        case .balanced: return String(localized: "Balanced", table: "DisplayStrings")
-        case .fast: return String(localized: "Fast", table: "DisplayStrings")
+        case .ultra: return AppLanguage.text("Ultra detail")
+        case .best: return AppLanguage.text("Best")
+        case .balanced: return AppLanguage.text("Balanced")
+        case .fast: return AppLanguage.text("Fast")
         }
     }
 
     var explanation: String {
         switch self {
-        case .ultra: return String(localized: "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection.", table: "DisplayStrings")
-        case .best: return String(localized: "Full resolution with a standard bitrate.", table: "DisplayStrings")
-        case .balanced: return String(localized: "Lower capture resolution for less latency and bandwidth.", table: "DisplayStrings")
-        case .fast: return String(localized: "Lowest latency and bandwidth, with a softer image. Good for WiFi.", table: "DisplayStrings")
+        case .ultra: return AppLanguage.text("Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection.")
+        case .best: return AppLanguage.text("Full resolution with a standard bitrate.")
+        case .balanced: return AppLanguage.text("Lower capture resolution for less latency and bandwidth.")
+        case .fast: return AppLanguage.text("Lowest latency and bandwidth, with a softer image. Good for WiFi.")
         }
     }
 }

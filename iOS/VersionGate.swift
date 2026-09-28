@@ -119,9 +119,9 @@ final class VersionGate: ObservableObject {
     }
 
     private static let requiredFallback =
-        "This version of OpenDisplay is no longer supported. Update from the App Store to keep using your second display."
+        ReceiverLocalization.text("This version of OpenDisplay is no longer supported. Update from the App Store to keep using your second display.")
     private static let recommendedFallback =
-        "A newer version of OpenDisplay is available."
+        ReceiverLocalization.text("A newer version of OpenDisplay is available.")
 }
 
 /// Numeric dotted-version compare (e.g. "0.10.0" older than "0.11.0"). Missing

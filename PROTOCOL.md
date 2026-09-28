@@ -776,3 +776,7 @@ This file is versioned by git; the authoritative change log is
 |---|---|
 | 2026-08-19 | Initial specification, written against `pv` 3 |
 | 2026-08-26 | Additive: `hello.cursorPort` and the UDP cursor side channel (section 6.3) |
+
+## Optional shared settings
+
+`settingsVersion: 3` in hello/welcome gates additive preference snapshots and field patches. It does not change the video protocol floor. See [SETTINGS_SYNC.md](SETTINGS_SYNC.md) for ownership, validation and message schemas. Existing display UUIDs and dimensions are read-only metadata, separate from the input protocol.

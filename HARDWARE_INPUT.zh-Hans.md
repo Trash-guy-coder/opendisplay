@@ -15,7 +15,7 @@
 
 ## 中英双语
 
-新增功能使用 `Shared/InputStrings.xcstrings`，英文为源语言，包含简体中文 `zh-Hans`，随系统/应用语言偏好选择。新增控件、提示、无障碍标签和带分辨率/目标帧率的连接状态均已纳入目录。
+新增功能使用 `Shared/FeatureStrings.xcstrings`，英文为源语言，包含简体中文 `zh-Hans`，随系统/应用语言偏好选择。新增控件、提示、无障碍标签和带分辨率/目标帧率的连接状态均已纳入目录。
 
 这仅覆盖本分支新增功能，不代表已完成全项目的 [#269](https://github.com/peetzweg/opendisplay/issues/269)。原有产品文案、日语、西班牙语及网站仍属于后续工作。
 
@@ -47,3 +47,5 @@ Command-Tab、Globe/Home、媒体键等可能被 iPadOS 保留。新 Mac 配旧�
 新增可选的 Command/Option 交换，覆盖左右键与键盘、点击、拖动、滚动修饰位。默认关闭；开启后使用 Option+Tab、Option+空格操作 Mac，原来的 Command 组合键仍归 iPadOS。
 
 直接监听握手与视频就绪，并在切回前台、窗口获得焦点时短暂重试输入接管；保持根视图身份，释放旧按键状态。组合预览完成两次不重启、不缩放窗口的切换测试，均恢复键盘焦点与鼠标锁定。用户随后确认其它输入问题已解决。
+
+Settings UI, language and source selection: [SETTINGS_SYNC.md](SETTINGS_SYNC.md).

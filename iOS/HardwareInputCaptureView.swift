@@ -79,6 +79,12 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
             forName: UIApplication.willResignActiveNotification, object: nil, queue: .main
         ) { [weak self] _ in self?.releaseHardwareInput() }
         mouseObservers.append(NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification, object: UserDefaults.standard, queue: .main
+        ) { [weak self] _ in
+            guard let self, let receiver = self.hardwareReceiver else { return }
+            self.configureHardwareInput(receiver: receiver, enabled: self.inputRequested)
+        })
+        mouseObservers.append(NotificationCenter.default.addObserver(
             forName: UIScene.willDeactivateNotification, object: nil, queue: .main
         ) { [weak self] notification in
             guard let self, let scene = notification.object as? UIScene,
@@ -125,6 +131,7 @@ class HardwareInputCaptureView: UIView, UIPointerInteractionDelegate {
         guard let receiver = hardwareReceiver else { return }
         let effective = inputRequested && receiver.connected && receiver.videoSize != .zero
             && receiver.macSupportsHardwareInput
+            && (UserDefaults.standard.object(forKey: "hardwareInputEnabled") as? Bool ?? true)
         let changed = effective != inputEnabled
         inputEnabled = effective
         if effective {

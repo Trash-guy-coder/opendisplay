@@ -74,14 +74,16 @@ final class StreamReceiver: ObservableObject {
     @Published var peerSignal: PeerUpdateSignal?
     /// Mac protocol version from the most recent `welcome` message.
     @Published private(set) var macProtocolVersion = WireProtocol.assumedWhenAbsent
+    @Published private(set) var remoteSenderSettings: SenderSettings?
+    @Published private(set) var macSettingsSupported = false
+    var receiverSettingsProvider: (() -> ReceiverSettings)?
+    var onReceiverSettingsChange: ((ReceiverSettings) -> Void)?
 
     /// True when the connected Mac understands pencil/proximity wire messages.
+    var macSupportsPencilWire: Bool { macProtocolVersion >= WireProtocol.pencilWireVersion }
     var macSupportsPreciseScroll: Bool { macProtocolVersion >= WireProtocol.preciseScrollWireVersion }
     var macSupportsRelativePointer: Bool { macProtocolVersion >= WireProtocol.relativePointerWireVersion }
     var macSupportsHardwareInput: Bool { macProtocolVersion >= WireProtocol.hardwareInputWireVersion }
-
-
-    var macSupportsPencilWire: Bool { macProtocolVersion >= WireProtocol.pencilWireVersion }
 
     private var listener: NWListener?
     private var listenerHealthy = false
@@ -773,6 +775,21 @@ final class StreamReceiver: ObservableObject {
         guard let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let type = obj["type"] as? String else { return }
         switch type {
+        case SettingsSync.senderState:
+            guard let settings = SettingsSync.decode(SenderSettings.self, data: data, message: type),
+                  settings.isComplete else { return }
+            DispatchQueue.main.async {
+                guard self.macSettingsSupported else { return }
+                self.remoteSenderSettings = settings
+            }
+        case SettingsSync.receiverChange:
+            guard let patch = SettingsSync.decode(ReceiverSettings.self, data: data, message: type),
+                  patch.isValidPatch else { return }
+            DispatchQueue.main.async {
+                guard self.macSettingsSupported else { return }
+                self.onReceiverSettingsChange?(patch)
+                self.publishReceiverSettings()
+            }
         case "pong":
             guard let t1 = obj["t"] as? Double, let mt = obj["mt"] as? Double else { return }
             let t2 = nowMs
@@ -821,6 +838,8 @@ final class StreamReceiver: ObservableObject {
             let macPV = obj["pv"] as? Int ?? WireProtocol.assumedWhenAbsent
             DispatchQueue.main.async {
                 self.macProtocolVersion = macPV
+                self.macSettingsSupported = obj["settingsVersion"] as? Int == SettingsSync.version
+                if self.macSettingsSupported { self.publishReceiverSettings() }
             }
             if macPV < WireProtocol.minSupportedPeer {
                 let msg = "The OpenDisplay app on your Mac is too old for this \(deviceKind) app. Update OpenDisplay on your Mac to reconnect."
@@ -905,6 +924,7 @@ final class StreamReceiver: ObservableObject {
             "pv": WireProtocol.version,   // issue #132 — absent on old receivers
             "displayMaxFrameRate": displayMaxFrameRate,
         ]
+        if receiverSettingsProvider != nil { hello["settingsVersion"] = SettingsSync.version }
         // Additive joint capability. The legacy rectangle below stays on the
         // wire while independently updated senders remain in the field.
         var h264: [String: Any] = ["codec": "h264", "maxFrameRate": decodeMaxFrameRate]
@@ -1017,6 +1037,24 @@ final class StreamReceiver: ObservableObject {
 
     func sendProximity(entering: Bool, x: Double, y: Double) {
         sendControl(["type": "proximity", "entering": entering, "x": x, "y": y])
+    }
+
+    func publishReceiverSettings() {
+        guard macSettingsSupported, connected,
+              let settings = receiverSettingsProvider?(), settings.isComplete else { return }
+        sendSettings(settings, type: SettingsSync.receiverState)
+    }
+
+    func requestSenderSettings(_ patch: SenderSettings) {
+        guard macSettingsSupported, connected, patch.isValid else { return }
+        sendSettings(patch, type: SettingsSync.senderChange)
+    }
+
+    private func sendSettings<T: Codable>(_ settings: T, type: String) {
+        guard let json = SettingsSync.json(settings, type: type),
+              let data = json.data(using: .utf8),
+              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
+        queue.async { [weak self] in self?.sendControl(object) }
     }
 
     private func sendControl(_ message: [String: Any], on conn: NWConnection? = nil,
@@ -1480,6 +1518,8 @@ final class StreamReceiver: ObservableObject {
             self.connected = value
             if !value {
                 self.macProtocolVersion = WireProtocol.assumedWhenAbsent
+                self.macSettingsSupported = false
+                self.remoteSenderSettings = nil
             }
         }
         if !value { setStatus("Listening on :9000") }

@@ -1,0 +1,798 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Menu bar": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu bar"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "菜单栏"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Dock": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dock"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "程序坞"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Background only": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background only"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在后台运行"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Your iPads, iPhones and Macs as extra displays": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your iPads, iPhones and Macs as extra displays"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "把 iPad、iPhone 和 Mac 变成扩展屏"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Disconnect All": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnect All"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部断开"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Devices": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devices"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "No devices found — plug one in via USB, or open the OpenDisplay app on a device on this WiFi network.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No devices found — plug one in via USB, or open the OpenDisplay app on a device on this WiFi network."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未发现设备。请通过 USB 连接，或在同一 WiFi 网络中的设备上打开 OpenDisplay。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Connect": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示模式"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Extend": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extend"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扩展屏"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Mirror": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "镜像"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Quality": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quality"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画质"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Show app in": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show app in"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用显示位置"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "No menu bar or Dock icon — streaming keeps running. Open the OpenDisplay app again (Spotlight/Finder) to show this window.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No menu bar or Dock icon — streaming keeps running. Open the OpenDisplay app again (Spotlight/Finder) to show this window."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "隐藏菜单栏和程序坞图标，画面传输继续运行。通过聚焦搜索或访达再次打开应用，即可显示此窗口。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Display layout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display layout"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屏幕排列"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Arrange Displays…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrange Displays…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "排列显示器…"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Opens System Settings → Displays, where you can position the extended displays relative to your Mac screen (Arrange…). Each device shows up as its own display, named after the device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens System Settings → Displays, where you can position the extended displays relative to your Mac screen (Arrange…). Each device shows up as its own display, named after the device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开“系统设置 → 显示器”，调整扩展屏相对于 Mac 屏幕的位置。每台设备会作为一个独立显示器出现。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Permissions": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissions"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "权限"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Screen Recording": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Recording"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屏幕录制"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Accessibility": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助功能"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Local Network": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local Network"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地网络"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Required to capture the display.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Required to capture the display."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用于捕获并传输屏幕画面。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Required for touch input from the device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Required for touch input from the device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用于接收设备的触摸和滚动操作。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Required for WiFi mode. If no device appears in the Devices list, allow OpenDisplay under Privacy & Security → Local Network on this Mac AND on the device — and keep the OpenDisplay app open there.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Required for WiFi mode. If no device appears in the Devices list, allow OpenDisplay under Privacy & Security → Local Network on this Mac AND on the device — and keep the OpenDisplay app open there."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WiFi 连接需要此权限。若未发现设备，请在 Mac 和接收设备的“隐私与安全性 → 本地网络”中允许 OpenDisplay，并保持接收端应用打开。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Idle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Idle"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "待机"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Logs": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logs"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日志"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Reveal the OpenDisplay log files in Finder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reveal the OpenDisplay log files in Finder"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在访达中显示 OpenDisplay 日志"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Quit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "退出"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Grant…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grant…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "授权…"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Open Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开设置"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Ask macOS for this permission. If the system dialog was already dismissed once, this registers the app under %@ in System Settings — flip the toggle there.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask macOS for this permission. If the system dialog was already dismissed once, this registers the app under %@ in System Settings — flip the toggle there."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "申请此权限。若系统提示已被关闭，请在系统设置的“%@”页面开启本应用。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Drop the connection and pair with the device again": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop the connection and pair with the device again"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "断开当前连接并重新连接设备"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Disconnect": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnect"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "断开"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "OpenDisplay": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenDisplay"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenDisplay"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Start this connection over": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start this connection over"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新建立此连接"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Check for Updates…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for Updates…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "检查更新…"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Local development build": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local development build"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地开发版"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Connected": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已连接"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Starting…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在启动…"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Waiting for the device to connect…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for the device to connect…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待设备连接…"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Preparing virtual display…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing virtual display…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在准备虚拟显示器…"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Connected to %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected to %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已连接到 %@"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Failed: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接失败：%@"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Connected devices: %d": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected devices: %d"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已连接 %d 台设备"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    }
+  },
+  "version": "1.0"
+}

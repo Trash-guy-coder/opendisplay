@@ -42,6 +42,7 @@ struct PhoneInfo: Decodable {
     let maxEncodeHigh: Int?  //  6.5): cap the stream, keep the desktop size
     let displayMaxFrameRate: Int?       // presentation ceiling; absent = legacy 60
     let videoCaps: [VideoCapability]?   // codec-specific joint decode constraints
+    let settingsVersion: Int?
 
     var kind: String { device ?? "device" }
     var protocolVersion: Int { pv ?? WireProtocol.assumedWhenAbsent }
@@ -60,6 +61,9 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
     // Status surfaced to the UI (updated on main thread).
     @MainActor var onStatus: ((String) -> Void)?
     @MainActor var onStats: ((Int, Double) -> Void)?   // framesSent, mbps
+    @MainActor var onStreamConfiguration: ((H264StreamConfiguration) -> Void)?
+    @MainActor var onReceiverSettings: ((ReceiverSettings) -> Void)?
+    @MainActor var onSenderSettingsChange: ((SenderSettings) -> Void)?
     // Fired when a previously connected device stays gone past the grace
     // period — the controller ends the session (capture, virtual display,
     // recording indicator all torn down) instead of dialing forever or
@@ -106,6 +110,8 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
     private let mode: CaptureMode
     private let quality: StreamQuality
     private let resolution: DesktopResolution
+    private let mirrorDisplayID: String
+    private let customResolution: CustomResolution
     private let refreshRate: Int
     // Stable per-device serial for the virtual display, so macOS can tell
     // multiple OpenDisplay monitors apart and persist their arrangement.
@@ -330,13 +336,15 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
     private var dropReplayTimer: DispatchSourceTimer?
 
     init(transport: SenderTransport, name: String, mode: CaptureMode,
-         quality: StreamQuality = .best, resolution: DesktopResolution = .native, refreshRate: Int = 60, displaySerial: UInt32 = 0x0001,
+         quality: StreamQuality = .best, resolution: DesktopResolution = .native, mirrorDisplayID: String = "main", customResolution: CustomResolution = .defaultValue, refreshRate: Int = 60, displaySerial: UInt32 = 0x0001,
          identityOffset: UInt32 = 0, awaitingWake: Bool = false) {
         self.transport = transport
         self.endpointName = name
         self.mode = mode
         self.quality = quality
         self.resolution = resolution
+        self.mirrorDisplayID = mirrorDisplayID
+        self.customResolution = customResolution
         self.refreshRate = refreshRate
         self.displaySerial = displaySerial
         self.baseIdentityOffset = identityOffset
@@ -375,10 +383,10 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
             // new fields and retain the existing H.264 behavior.
             let info = try await waitForHello()
             let content = try await SCShareableContent.current
-            let mainID = MirrorDisplaySelection.select(available: content.displays.map(\.displayID), main: CGMainDisplayID())
-            guard let display = content.displays.first(where: { $0.displayID == mainID }) else {
+            let selectedID = selectedMirrorDisplayID(in: content.displays)
+            guard let display = content.displays.first(where: { $0.displayID == selectedID }) else {
                 throw NSError(domain: "MacSender", code: 1,
-                              userInfo: [NSLocalizedDescriptionKey: String(localized: "The main display is unavailable.", table: "DisplayStrings")])
+                              userInfo: [NSLocalizedDescriptionKey: AppLanguage.text("The selected mirror display is unavailable. Choose another display.")])
             }
             // SCDisplay.width/height are POINTS. Capturing at points on a
             // Retina panel discards half the raster before the encoder ever
@@ -428,7 +436,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         // The virtual display runs @2x HiDPI. Large modes are applied only
         // after a conservative bootstrap mode is online; some saved macOS
         // display states reject the same mode when it is present at creation.
-        let canvasPixels = resolution.pixels(nativeWidth: info.pixelsWide, nativeHeight: info.pixelsHigh)
+        let canvasPixels = resolution.pixels(nativeWidth: info.pixelsWide, nativeHeight: info.pixelsHigh, custom: customResolution)
         guard let canvasPlan = VirtualCanvasSizing.plan(
             pixelsWide: canvasPixels.width, pixelsHigh: canvasPixels.height,
             pixelsPerPoint: resolution.pixelsPerPoint) else {
@@ -643,10 +651,10 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
                 switch mode {
                 case .mirror:
                     let content = try await SCShareableContent.current
-                    let mainID = MirrorDisplaySelection.select(available: content.displays.map(\.displayID), main: CGMainDisplayID())
-                    guard let display = content.displays.first(where: { $0.displayID == mainID }) else {
+                    let selectedID = selectedMirrorDisplayID(in: content.displays)
+                    guard let display = content.displays.first(where: { $0.displayID == selectedID }) else {
                         throw NSError(domain: "MacSender", code: 1,
-                                      userInfo: [NSLocalizedDescriptionKey: String(localized: "The main display is unavailable.", table: "DisplayStrings")])
+                                      userInfo: [NSLocalizedDescriptionKey: AppLanguage.text("The selected mirror display is unavailable. Choose another display.")])
                     }
                     let displayMode = CGDisplayCopyDisplayMode(display.displayID)
                     try await startCapture(
@@ -699,7 +707,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         guard let vd = virtualDisplay else { return false }
         try ensureActiveDisplay(vd)
 
-        let selectedPixels = resolution.pixels(nativeWidth: info.pixelsWide, nativeHeight: info.pixelsHigh)
+        let selectedPixels = resolution.pixels(nativeWidth: info.pixelsWide, nativeHeight: info.pixelsHigh, custom: customResolution)
         let pointsWide = (selectedPixels.width / vd.pixelsPerPoint) & ~1
         let pointsHigh = (selectedPixels.height / vd.pixelsPerPoint) & ~1
         let arrangementKey = info.id ?? String(format: "serial-%08x", displaySerial)
@@ -832,12 +840,21 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
                       userInfo: [NSLocalizedDescriptionKey: "virtual display never appeared in SCShareableContent"])
     }
 
+    private func selectedMirrorDisplayID(in displays: [SCDisplay]) -> CGDirectDisplayID? {
+        let identities = Dictionary(uniqueKeysWithValues: displays.compactMap { display in
+            ExistingDisplayCatalog.identifier(display.displayID).map { (display.displayID, $0) }
+        })
+        return MirrorDisplaySelection.select(available: displays.map(\.displayID), main: CGMainDisplayID(),
+                                             preference: mirrorDisplayID, uuidByID: identities)
+    }
+
     private func startCapture(display: SCDisplay,
                               sourcePixelsWide: Int, sourcePixelsHigh: Int,
                               receiver info: PhoneInfo) async throws {
         try Task.checkCancellation()
         guard !stopped else { throw CancellationError() }
         hardwareInputInjector.setDisplayID(display.displayID)
+        if mode == .mirror { inputInjector = InputInjector(displayID: display.displayID) }
         let legacyCeiling: PixelSize?
         if let maxW = info.maxEncodeWide, let maxH = info.maxEncodeHigh,
            maxW > 0, maxH > 0 {
@@ -846,7 +863,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
             legacyCeiling = nil
         }
         let outputPixels = mode == .mirror
-            ? resolution.mirrorPixels(source: PixelSize(width: sourcePixelsWide, height: sourcePixelsHigh))
+            ? resolution.mirrorPixels(source: PixelSize(width: sourcePixelsWide, height: sourcePixelsHigh), custom: customResolution)
             : PixelSize(width: sourcePixelsWide, height: sourcePixelsHigh)
         let selected = try H264StreamConfiguration.make(
             source: outputPixels,
@@ -1979,6 +1996,16 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
             return
         }
         switch type {
+        case SettingsSync.receiverState:
+            guard lastHello?.settingsVersion == SettingsSync.version,
+                  let settings = SettingsSync.decode(ReceiverSettings.self, data: payload, message: type),
+                  settings.isComplete else { return }
+            Task { @MainActor in self.onReceiverSettings?(settings) }
+        case SettingsSync.senderChange:
+            guard !stopped, lastHello?.settingsVersion == SettingsSync.version,
+                  let patch = SettingsSync.decode(SenderSettings.self, data: payload, message: type),
+                  patch.isValid else { return }
+            Task { @MainActor in self.onSenderSettingsChange?(patch) }
         case "ping":
             // Echo with our clock so the phone can estimate the offset
             // (NTP-style) and compute true end-to-end frame latency.
@@ -2137,11 +2164,13 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
             // session to the controller right away: it tears the virtual
             // display down (returning the cursor to a visible screen) and
             // starts a wake-waiting replacement session.
+            hardwareInputInjector.releaseAll()
             Log.info("receiver went to sleep — ending session, reconnect armed for wake")
             Task { @MainActor in self.onPeerSleeping?() }
         case WireMessage.closing:
             // The app on the device is quitting for real — end the session
             // without the silence grace and without waiting for a wake.
+            hardwareInputInjector.releaseAll()
             Log.info("receiver app closed — ending session")
             Task { @MainActor in self.onPeerClosed?() }
         default:
@@ -2560,7 +2589,23 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
     /// Identify ourselves to the receiver: our protocol version and the oldest
     /// receiver version we still support.
     private func sendWelcome() {
-        sendJSONFrame("{\"type\":\"\(WireMessage.welcome)\",\"pv\":\(WireProtocol.version),\"min\":\(WireProtocol.minSupportedPeer)}")
+        sendJSONFrame("{\"type\":\"\(WireMessage.welcome)\",\"pv\":\(WireProtocol.version),\"min\":\(WireProtocol.minSupportedPeer),\"settingsVersion\":\(SettingsSync.version)}")
+    }
+
+    func sendReceiverSettingsChange(_ patch: ReceiverSettings) {
+        guard patch.isValidPatch, let json = SettingsSync.json(patch, type: SettingsSync.receiverChange) else { return }
+        queue.async { [weak self] in
+            guard let self, !self.stopped, self.lastHello?.settingsVersion == SettingsSync.version else { return }
+            self.sendJSONFrame(json)
+        }
+    }
+
+    func sendSenderSettings(_ settings: SenderSettings) {
+        guard settings.isComplete, let json = SettingsSync.json(settings, type: SettingsSync.senderState) else { return }
+        queue.async { [weak self] in
+            guard let self, !self.stopped, self.lastHello?.settingsVersion == SettingsSync.version else { return }
+            self.sendJSONFrame(json)
+        }
     }
 
     /// Announce the operating point before video. Legacy receivers ignore the
@@ -2677,6 +2722,11 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         activeStreamConfiguration = configuration
         frameRateLimiter = FrameRateLimiter(framesPerSecond: configuration.framesPerSecond)
         pipelineLock.unlock()
+        Task { @MainActor [weak self] in
+            guard let self, !self.stopped,
+                  self.activeStreamConfigurationSnapshot == configuration else { return }
+            self.onStreamConfiguration?(configuration)
+        }
     }
 
     private func resetFrameRateLimiterForReconnect() {

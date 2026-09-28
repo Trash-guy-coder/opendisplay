@@ -7,3 +7,5 @@
 组合预览真机日志确认了 2K、4K 的实际捕获与接收，目标为 60 fps、45/80 Mbps。WiFi 4K 切换有短暂卡顿，未证明持续 4K60，更未证明 4K120。1080p 主屏镜像仍是 1080p。
 
 新增文案中英双语。设置仍按应用保存；设置子页面、语言切换和双端同步作为后续独立贡献。
+
+Settings UI, language and source selection: [SETTINGS_SYNC.md](SETTINGS_SYNC.md).

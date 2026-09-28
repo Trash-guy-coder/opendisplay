@@ -93,7 +93,7 @@ struct DiagnosticsLogView: View {
     private func displayText(from text: String) -> String {
         let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
         guard lines.count > Self.displayedLines else { return text }
-        return "(showing the last \(Self.displayedLines) lines, the shared file has all of them)\n\n"
+        return ReceiverLocalization.format("(showing the last %d lines, the shared file has all of them)", Self.displayedLines) + "\n\n"
             + lines.suffix(Self.displayedLines).joined(separator: "\n")
     }
 

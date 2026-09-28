@@ -10,9 +10,9 @@ enum AppPresentation: String, CaseIterable {
 
     var label: String {
         switch self {
-        case .menuBar: return "Menu bar"
-        case .dock: return "Dock"
-        case .background: return "Background only"
+        case .menuBar: return AppLanguage.text("Menu bar", table: "Localizable")
+        case .dock: return AppLanguage.text("Dock", table: "Localizable")
+        case .background: return AppLanguage.text("Background only", table: "Localizable")
         }
     }
 }
@@ -21,6 +21,7 @@ enum AppPresentation: String, CaseIterable {
 struct OpenSidecarMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var controller = SenderController.shared
+    @ObservedObject private var language = AppLanguage.shared
 
     var body: some Scene {
         MenuBarExtra(isInserted: Binding(
@@ -33,6 +34,12 @@ struct OpenSidecarMacApp: App {
                   ? "rectangle.on.rectangle.fill" : "rectangle.on.rectangle")
         }
         .menuBarExtraStyle(.window)
+        .commands {
+            CommandGroup(replacing: .appSettings) {
+                Button(AppLanguage.text("Settings…")) { controller.showingSettings = true }
+                    .keyboardShortcut(",")
+            }
+        }
     }
 }
 
@@ -76,7 +83,7 @@ enum MainWindow {
     static func show() {
         if window == nil {
             let w = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 440, height: 540),
+                contentRect: NSRect(x: 0, y: 0, width: 560, height: 680),
                 styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered, defer: false)
             w.title = "OpenDisplay"
@@ -122,6 +129,9 @@ final class DeviceSession: ObservableObject, Identifiable {
     @Published var status = "Starting…"
     @Published var framesSent = 0
     @Published var mbps = 0.0
+    @Published var streamConfiguration: H264StreamConfiguration?
+    @Published var receiverSettings: ReceiverSettings?
+    @Published var nativePixels: PixelSize?
     // The sender's start() threw: the pipeline is freed, only this row's
     // error text remains. A failed session must never swallow a fresh
     // connect for its device the way a live one does.
@@ -169,6 +179,17 @@ final class DeviceSession: ObservableObject, Identifiable {
 @MainActor
 final class SenderController: ObservableObject {
     static let shared = SenderController()
+    @Published var showingSettings = false
+    @Published private(set) var availableMirrorDisplays: [MirrorDisplaySource] = []
+    private var displayObserver: AnyCancellable?
+    @Published var mirrorDisplayID = UserDefaults.standard.string(forKey: "mirrorDisplayID") ?? "main" {
+        didSet {
+            guard mirrorDisplayID != oldValue else { return }
+            UserDefaults.standard.set(mirrorDisplayID, forKey: "mirrorDisplayID")
+            if mode == .mirror { restartAll() }
+            publishSenderSettings()
+        }
+    }
 
     @Published var presentation = AppPresentation(
         rawValue: UserDefaults.standard.string(forKey: "presentation") ?? "") ?? .menuBar {
@@ -190,24 +211,105 @@ final class SenderController: ObservableObject {
     @Published var port = UserDefaults.standard.string(forKey: "port") ?? "9000"
     // `-mode mirror` / `-mode extend` launch argument also works.
     @Published var mode = CaptureMode(rawValue: UserDefaults.standard.string(forKey: "mode") ?? "") ?? .extend {
-        didSet { UserDefaults.standard.set(mode.rawValue, forKey: "mode") }
+        didSet {
+            guard mode != oldValue else { return }
+            UserDefaults.standard.set(mode.rawValue, forKey: "mode")
+            restartAll()
+            publishSenderSettings()
+        }
     }
     @Published var resolution = DesktopResolution(rawValue: UserDefaults.standard.string(forKey: "resolution") ?? "") ?? .native {
-        didSet { UserDefaults.standard.set(resolution.rawValue, forKey: "resolution") }
+        didSet {
+            guard resolution != oldValue else { return }
+            UserDefaults.standard.set(resolution.rawValue, forKey: "resolution")
+            restartAll()
+            publishSenderSettings()
+        }
+    }
+    @Published var customResolution: CustomResolution = {
+        let value = CustomResolution(width: UserDefaults.standard.integer(forKey: "customWidth"),
+                                     height: UserDefaults.standard.integer(forKey: "customHeight"))
+        return value.isValid ? value : .defaultValue
+    }() {
+        didSet {
+            guard customResolution.isValid, customResolution != oldValue else { return }
+            UserDefaults.standard.set(customResolution.width, forKey: "customWidth")
+            UserDefaults.standard.set(customResolution.height, forKey: "customHeight")
+            if resolution == .custom { restartAll() }
+            publishSenderSettings()
+        }
     }
     @Published var refreshRate = DisplayRefreshRate(rawValue: UserDefaults.standard.integer(forKey: "refreshRate")) ?? .hz60 {
-        didSet { UserDefaults.standard.set(refreshRate.rawValue, forKey: "refreshRate") }
+        didSet {
+            guard refreshRate != oldValue else { return }
+            UserDefaults.standard.set(refreshRate.rawValue, forKey: "refreshRate")
+            restartAll()
+            publishSenderSettings()
+        }
     }
     @Published var lowLatencyCursor = UserDefaults.standard.object(forKey: "localCursor") == nil
         || UserDefaults.standard.bool(forKey: "localCursor") {
-        didSet { UserDefaults.standard.set(lowLatencyCursor, forKey: "localCursor") }
+        didSet {
+            guard lowLatencyCursor != oldValue else { return }
+            UserDefaults.standard.set(lowLatencyCursor, forKey: "localCursor")
+            restartAll()
+            publishSenderSettings()
+        }
     }
     private var restartTask: Task<Void, Never>?
     private var restarting = false
     private var restartTargets: [ConnectionTarget] = []
     private var restartRevision = 0
     @Published var quality = StreamQuality(rawValue: UserDefaults.standard.string(forKey: "quality") ?? "") ?? .best {
-        didSet { UserDefaults.standard.set(quality.rawValue, forKey: "quality") }
+        didSet {
+            guard quality != oldValue else { return }
+            UserDefaults.standard.set(quality.rawValue, forKey: "quality")
+            restartAll()
+            publishSenderSettings()
+        }
+    }
+
+    var senderSettings: SenderSettings {
+        .init(mode: mode.rawValue, resolution: resolution.rawValue,
+              refreshRate: refreshRate.rawValue, quality: quality.rawValue,
+              lowLatencyCursor: lowLatencyCursor,
+              customWidth: customResolution.width, customHeight: customResolution.height,
+              nativeWidth: sessions.count == 1 ? sessions.first?.nativePixels?.width : nil,
+              nativeHeight: sessions.count == 1 ? sessions.first?.nativePixels?.height : nil,
+              mirrorDisplayID: mirrorDisplayID, availableMirrorDisplays: availableMirrorDisplays)
+    }
+
+    private func settingsSnapshot(for session: DeviceSession) -> SenderSettings {
+        var value = senderSettings
+        value.nativeWidth = session.nativePixels?.width
+        value.nativeHeight = session.nativePixels?.height
+        return value
+    }
+
+    func applySenderSettings(_ patch: SenderSettings) {
+        guard patch.isValid else { return }
+        if let id = patch.mirrorDisplayID {
+            guard id == "main" || availableMirrorDisplays.contains(where: { $0.id.caseInsensitiveCompare(id) == .orderedSame }) else { return }
+            mirrorDisplayID = id
+        }
+        if let value = patch.customResolution { customResolution = value }
+        if let value = patch.mode.flatMap(CaptureMode.init(rawValue:)) { mode = value }
+        if let value = patch.resolution.flatMap(DesktopResolution.init(rawValue:)) { resolution = value }
+        if let value = patch.refreshRate.flatMap(DisplayRefreshRate.init(rawValue:)) { refreshRate = value }
+        if let value = patch.quality.flatMap(StreamQuality.init(rawValue:)) { quality = value }
+        if let value = patch.lowLatencyCursor { lowLatencyCursor = value }
+        publishSenderSettings()
+    }
+
+    private func publishSenderSettings() {
+        sessions.forEach { $0.sender.sendSenderSettings(settingsSnapshot(for: $0)) }
+    }
+
+    func changeReceiverSettings(_ patch: ReceiverSettings, session: DeviceSession) {
+        guard patch.isValidPatch, let current = session.receiverSettings,
+              sessions.contains(where: { $0 === session }) else { return }
+        session.receiverSettings = current.merging(patch)
+        session.sender.sendReceiverSettingsChange(patch)
     }
 
     var running: Bool { restarting || !sessions.isEmpty }
@@ -256,6 +358,12 @@ final class SenderController: ObservableObject {
     private let wifiAutoConnectDeadline = Date().addingTimeInterval(12)
 
     init() {
+        availableMirrorDisplays = ExistingDisplayCatalog.read()
+        displayObserver = NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                Task { @MainActor in self?.refreshMirrorDisplays() }
+            }
         startBrowsing()
         usbWatcher = UsbmuxDeviceWatcher { [weak self] devices in
             guard let self else { return }
@@ -269,6 +377,14 @@ final class SenderController: ObservableObject {
             self.wifiAutoConnectArmed = true
             self.autoConnect()
         }
+    }
+
+    private func refreshMirrorDisplays() {
+        let displays = ExistingDisplayCatalog.read()
+        guard displays != availableMirrorDisplays else { return }
+        availableMirrorDisplays = displays
+        publishSenderSettings()
+        if mode == .mirror { restartAll() }
     }
 
     private func startBrowsing() {
@@ -561,7 +677,7 @@ final class SenderController: ObservableObject {
 
         let name = label(for: target)
         let sender = MacSender(transport: transport, name: name, mode: mode,
-                               quality: quality, resolution: resolution, refreshRate: refreshRate.rawValue, displaySerial: Self.displaySerial(for: id),
+                               quality: quality, resolution: resolution, mirrorDisplayID: mirrorDisplayID, customResolution: customResolution, refreshRate: refreshRate.rawValue, displaySerial: Self.displaySerial(for: id),
                                identityOffset: identityOffset(for: id),
                                awaitingWake: awaitingWake)
         let session = DeviceSession(id: id, target: target, name: name, sender: sender)
@@ -575,8 +691,16 @@ final class SenderController: ObservableObject {
             session.status = text
             Log.info("status[\(id)]: \(text)")
         }
+        sender.onReceiverSettings = { [weak session] settings in session?.receiverSettings = settings }
+        sender.onSenderSettingsChange = { [weak self, weak session] patch in
+            guard let self, let session, self.sessions.contains(where: { $0 === session }) else { return }
+            self.applySenderSettings(patch)
+        }
         sender.onHello = { [weak self, weak session] info in
             guard let self, let session, self.sessions.contains(where: { $0 === session }) else { return }
+            session.nativePixels = PixelSize(width: info.pixelsWide, height: info.pixelsHigh)
+            self.objectWillChange.send()
+            session.sender.sendSenderSettings(self.settingsSnapshot(for: session))
             session.deviceID = info.id
             session.deviceKind = info.device
             if case .usb(let udid?) = session.target, let installID = info.id {
@@ -586,6 +710,9 @@ final class SenderController: ObservableObject {
             // The learned identity may reveal that this WiFi session's device
             // is cabled — take the upgrade opportunity right away.
             self.autoConnect()
+        }
+        sender.onStreamConfiguration = { [weak session] configuration in
+            session?.streamConfiguration = configuration
         }
         sender.onStats = { [weak session] frames, mbps in
             session?.framesSent = frames
@@ -864,11 +991,35 @@ final class PermissionMonitor: ObservableObject {
 struct ContentView: View {
     @ObservedObject var controller: SenderController
     @StateObject private var permissions = PermissionMonitor()
+    @ObservedObject private var language = AppLanguage.shared
     // Optional so the view still compiles/previews without an updater (e.g.
     // if Sparkle ever fails to start); the button just disables itself then.
     let updater: SPUStandardUpdaterController?
 
     var body: some View {
+        VStack(spacing: 0) {
+            if controller.showingSettings {
+                HStack {
+                    Button { controller.showingSettings = false } label: {
+                        Label(AppLanguage.text("Back"), systemImage: "chevron.left")
+                    }
+                    .keyboardShortcut(.escape, modifiers: [])
+                    Spacer()
+                    Text(AppLanguage.text("Settings")).font(.headline)
+                    Spacer()
+                    Text("OpenDisplay").foregroundStyle(.secondary)
+                }.padding(16)
+                Divider()
+                MacSettingsView(controller: controller)
+            } else {
+                homeContent
+            }
+        }
+        .frame(width: 560, height: 680)
+        .environment(\.locale, language.locale)
+    }
+
+    private var homeContent: some View {
         VStack(spacing: 0) {
             // Header
             HStack(spacing: 12) {
@@ -883,6 +1034,11 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
+                Button { controller.showingSettings = true } label: {
+                    Image(systemName: "gearshape")
+                }
+                .help(AppLanguage.text("Settings…"))
+                .accessibilityLabel(AppLanguage.text("Settings…"))
                 if controller.running {
                     Button("Disconnect All") { controller.disconnectAll() }
                         .controlSize(.large)
@@ -930,37 +1086,7 @@ struct ContentView: View {
                     }
                 }
 
-                Picker("Mode", selection: $controller.mode) {
-                    Text("Extend").tag(CaptureMode.extend)
-                    Text("Mirror").tag(CaptureMode.mirror)
-                }
-                .pickerStyle(.segmented)
-                .onChange(of: controller.mode) { controller.restartAll() }
-
-                Picker(String(localized: "Resolution", table: "DisplayStrings"), selection: $controller.resolution) {
-                    ForEach(DesktopResolution.allCases, id: \.self) { value in Text(value.label).tag(value) }
-                }
-                .onChange(of: controller.resolution) { controller.restartAll() }
-                Picker(String(localized: "Frame-rate limit", table: "DisplayStrings"), selection: $controller.refreshRate) {
-                    ForEach(DisplayRefreshRate.allCases, id: \.self) { value in Text(value.label).tag(value) }
-                }
-                .onChange(of: controller.refreshRate) { controller.restartAll() }
-                Toggle(String(localized: "Low-latency cursor", table: "DisplayStrings"), isOn: $controller.lowLatencyCursor)
-                    .onChange(of: controller.lowLatencyCursor) { controller.restartAll() }
-                Text(String(localized: "The selected rate is limited by receiver, codec and network capabilities. 90/120 Hz is experimental. Mirror resolution changes the stream without changing the main display mode.", table: "DisplayStrings"))
-                    .font(.caption).foregroundStyle(.secondary)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Picker("Quality", selection: $controller.quality) {
-                        ForEach(StreamQuality.allCases, id: \.self) { q in
-                            Text(q.label).tag(q)
-                        }
-                    }
-                    .onChange(of: controller.quality) { controller.restartAll() }
-                    Text(controller.quality.explanation)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                SenderDisplayControls(controller: controller)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Picker("Show app in", selection: $controller.presentation) {
@@ -968,6 +1094,7 @@ struct ContentView: View {
                             Text(p.label).tag(p)
                         }
                     }
+                    .id(language.selection)
                     if controller.presentation == .background {
                         Text("No menu bar or Dock icon — streaming keeps running. Open the OpenDisplay app again (Spotlight/Finder) to show this window.")
                             .font(.caption)
@@ -1024,8 +1151,8 @@ struct ContentView: View {
                     .fill(controller.running ? .green : .secondary.opacity(0.5))
                     .frame(width: 9, height: 9)
                 Text(controller.running
-                     ? "\(controller.sessions.count) device\(controller.sessions.count == 1 ? "" : "s") connected"
-                     : "Idle")
+                     ? String(format: AppLanguage.text("Connected devices: %d", table: "Localizable"), controller.sessions.count)
+                     : AppLanguage.text("Idle", table: "Localizable"))
                     .font(.callout)
                     .lineLimit(1)
                 Spacer()
@@ -1044,7 +1171,6 @@ struct ContentView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
         }
-        .frame(width: 440, height: 540)
     }
 
     @ViewBuilder
@@ -1056,9 +1182,9 @@ struct ContentView: View {
                             : granted ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .foregroundStyle(uncertain ? .orange : granted ? .green : .red)
             VStack(alignment: .leading, spacing: 2) {
-                Text(title)
+                Text(AppLanguage.text(title, table: "Localizable"))
                 if uncertain || !granted {
-                    Text(help)
+                    Text(AppLanguage.text(help, table: "Localizable"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -1082,6 +1208,7 @@ struct ContentView: View {
 /// One connected device: live status, throughput, reconnect + disconnect.
 @MainActor
 struct SessionRow: View {
+    @ObservedObject private var language = AppLanguage.shared
     let title: String
     @ObservedObject var session: DeviceSession
     let controller: SenderController
@@ -1104,7 +1231,7 @@ struct SessionRow: View {
                 .frame(width: 9, height: 9)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                Text("\(session.transportLabel) · \(DisplayLocalization.streamStatus(session.status) ?? session.status)")
+                Text("\(session.transportLabel) · \(FeatureLocalization.streamStatus(session.status) ?? AppLanguage.text(session.status, table: "Localizable"))")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)

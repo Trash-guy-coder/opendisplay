@@ -1,0 +1,1716 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Native": {
+      "comment": "Display resolution preset: retain the receiver native pixel dimensions.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生"
+          }
+        }
+      }
+    },
+    "Resolution": {
+      "comment": "Mac sender: virtual desktop or mirror stream resolution picker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resolution"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分辨率"
+          }
+        }
+      }
+    },
+    "Frame-rate limit": {
+      "comment": "Requested maximum streaming frame rate; not measured frame rate.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frame-rate limit"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刷新率上限"
+          }
+        }
+      }
+    },
+    "Low-latency cursor": {
+      "comment": "Mac sender: show the cursor independently of encoded video.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low-latency cursor"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低延迟光标"
+          }
+        }
+      }
+    },
+    "The selected rate is limited by receiver, codec and network capabilities. 90/120 Hz is experimental. Mirror resolution changes the stream without changing the main display mode.": {
+      "comment": "Explanation below display settings. Keep Hz unchanged.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected rate is limited by receiver, codec and network capabilities. 90/120 Hz is experimental. Mirror resolution changes the stream without changing the main display mode."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实际帧率受接收设备、编码和网络能力限制。90/120 Hz 为实验选项。镜像分辨率只改变传输画面，不修改主屏显示模式。"
+          }
+        }
+      }
+    },
+    "Keyboard & trackpad input": {
+      "comment": "iPad receiver toggle for forwarding physical input to the Mac.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard & trackpad input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键盘与触控板输入"
+          }
+        }
+      }
+    },
+    "Input": {
+      "comment": "Section heading for hardware keyboard and trackpad controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入"
+          }
+        }
+      }
+    },
+    "Input goes to your Mac only while this app is streaming in the foreground. Use the keyboard layout and input method selected on your Mac. Some iPadOS system shortcuts stay on the iPad.": {
+      "comment": "Hardware input scope, IME ownership and system shortcut limitation.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input goes to your Mac only while this app is streaming in the foreground. Use the keyboard layout and input method selected on your Mac. Some iPadOS system shortcuts stay on the iPad."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只有此应用在前台传输画面时，输入才会发送到 Mac。请使用 Mac 上选择的键盘布局和输入法。部分 iPadOS 系统快捷键仍由 iPad 处理。"
+          }
+        }
+      }
+    },
+    "Keyboard and trackpad forwarding needs an updated Mac app. Touch input remains available with older Mac apps.": {
+      "comment": "Compatibility help when the connected sender lacks the optional hardware-input capability.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard and trackpad forwarding needs an updated Mac app. Touch input remains available with older Mac apps."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键盘和触控板转发需要更新 Mac 端应用。旧版 Mac 应用仍可接收触摸输入。"
+          }
+        }
+      }
+    },
+    "Pointer speed": {
+      "comment": "Trackpad pointer movement gain. Also used as the slider accessibility label.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pointer speed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指针速度"
+          }
+        }
+      }
+    },
+    "Scroll speed": {
+      "comment": "Two-finger scroll gain, independent of pointer speed. Also an accessibility label.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scroll speed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滚动速度"
+          }
+        }
+      }
+    },
+    "Reverse scroll direction": {
+      "comment": "Reverse both scroll axes; does not change pointer movement or OS preferences.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reverse scroll direction"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "反转滚动方向"
+          }
+        }
+      }
+    },
+    "Reset trackpad settings": {
+      "comment": "Restore pointer gain, scroll gain and scroll direction to app defaults.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset trackpad settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重置触控板设置"
+          }
+        }
+      }
+    },
+    "The main display is unavailable.": {
+      "comment": "Mirror capture cannot find the main Mac display in ScreenCaptureKit.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The main display is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "主显示器当前不可用。"
+          }
+        }
+      }
+    },
+    "Device": {
+      "comment": "Generic receiving device name when the receiver does not identify its kind.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备"
+          }
+        }
+      }
+    },
+    "Extending to %@ (%lld×%lld, %lld fps target)": {
+      "comment": "Mac connection status. Arguments: device kind, encoded width, encoded height, requested/negotiated fps. Not measured FPS.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extending to %@ (%lld×%lld, %lld fps target)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在扩展到 %@（%lld×%lld，目标 %lld fps）"
+          }
+        }
+      }
+    },
+    "Mirroring to %@ (%lld×%lld, %lld fps target)": {
+      "comment": "Mac connection status. Arguments: device kind, encoded width, encoded height, requested/negotiated fps. Not measured FPS.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirroring to %@ (%lld×%lld, %lld fps target)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在镜像到 %@（%lld×%lld，目标 %lld fps）"
+          }
+        }
+      }
+    },
+    "Mac shortcut mode": {
+      "comment": "iPad receiver optional physical Command/Option swap and shortcut guide. Do not promise interception of iPadOS-reserved shortcuts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac shortcut mode"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 快捷键模式"
+          }
+        }
+      }
+    },
+    "Swap Command and Option only while controlling your Mac. Turn off to restore the usual keys. iPadOS may still reserve its own shortcuts.": {
+      "comment": "iPad receiver optional physical Command/Option swap and shortcut guide. Do not promise interception of iPadOS-reserved shortcuts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swap Command and Option only while controlling your Mac. Turn off to restore the usual keys. iPadOS may still reserve its own shortcuts."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在控制 Mac 时交换 Command 和 Option。关闭即可恢复原来的按键。iPadOS 仍可能保留部分系统快捷键。"
+          }
+        }
+      }
+    },
+    "Use Option instead of Command for Mac shortcuts: Option-Tab switches Mac apps; Option-Space opens Mac search; Option-C/V copies/pastes. Use Command for Mac Option shortcuts. Shift and Control keep their usual roles.": {
+      "comment": "iPad receiver optional physical Command/Option swap and shortcut guide. Do not promise interception of iPadOS-reserved shortcuts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Option instead of Command for Mac shortcuts: Option-Tab switches Mac apps; Option-Space opens Mac search; Option-C/V copies/pastes. Use Command for Mac Option shortcuts. Shift and Control keep their usual roles."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用 Option 代替 Command 操作 Mac：Option-Tab 切换 Mac 应用，Option-空格打开 Mac 搜索，Option-C/V 复制和粘贴。Mac 的 Option 快捷键改用 Command；Shift 和 Control 保持不变。"
+          }
+        }
+      }
+    },
+    "Settings…": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置…"
+          }
+        }
+      }
+    },
+    "OpenDisplay Settings": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenDisplay Settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenDisplay 设置"
+          }
+        }
+      }
+    },
+    "Mode": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示模式"
+          }
+        }
+      }
+    },
+    "Extend": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extend"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扩展屏"
+          }
+        }
+      }
+    },
+    "Mirror": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "镜像"
+          }
+        }
+      }
+    },
+    "Quality": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quality"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画质"
+          }
+        }
+      }
+    },
+    "Ultra detail": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ultra detail"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "超清（高码率）"
+          }
+        }
+      }
+    },
+    "Best": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清晰（标准码率）"
+          }
+        }
+      }
+    },
+    "Balanced": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanced"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "均衡"
+          }
+        }
+      }
+    },
+    "Fast": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fast"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "流畅"
+          }
+        }
+      }
+    },
+    "Full resolution with a standard bitrate.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full resolution with a standard bitrate."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留完整分辨率，使用标准码率。"
+          }
+        }
+      }
+    },
+    "Lower capture resolution for less latency and bandwidth.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lower capture resolution for less latency and bandwidth."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低传输分辨率，减少延迟和带宽占用。"
+          }
+        }
+      }
+    },
+    "Lowest latency and bandwidth, with a softer image. Good for WiFi.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lowest latency and bandwidth, with a softer image. Good for WiFi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "优先降低延迟和带宽占用，画面略柔和，适合网络较慢时使用。"
+          }
+        }
+      }
+    },
+    "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留完整分辨率，并提高编码码率（目标 24–80 Mbps）。带宽占用更高，建议先在稳定连接下选择 60 Hz。"
+          }
+        }
+      }
+    },
+    "Native matches the iPad screen. 2K/4K use a 16:9 HiDPI desktop in Extend mode. Mirror preserves the main screen's detail and aspect ratio without upscaling. The receiver and codec may lower the selected resolution or frame rate.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native matches the iPad screen. 2K/4K use a 16:9 HiDPI desktop in Extend mode. Mirror preserves the main screen's detail and aspect ratio without upscaling. The receiver and codec may lower the selected resolution or frame rate."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生分辨率匹配 iPad 屏幕。扩展模式下，2K/4K 使用 16:9 高清桌面；镜像模式保持主屏比例，不将低分辨率放大冒充高清。实际分辨率和帧率可能受接收设备与编码能力限制。"
+          }
+        }
+      }
+    },
+    "Display & picture quality": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display & picture quality"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示与画质"
+          }
+        }
+      }
+    },
+    "For sharper text, start with Native + Ultra detail + 60 Hz. 4K costs more bandwidth and is downsampled on a lower-resolution iPad screen; 4K does not guarantee 120 fps.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For sharper text, start with Native + Ultra detail + 60 Hz. 4K costs more bandwidth and is downsampled on a lower-resolution iPad screen; 4K does not guarantee 120 fps."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "想让文字更清晰，可先选择“原生 + 超清 + 60 Hz”。4K 更占带宽，在分辨率较低的 iPad 上仍会缩小显示；4K 不代表能达到 120 帧/秒。"
+          }
+        }
+      }
+    },
+    "Active streams": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active streams"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前连接与传输"
+          }
+        }
+      }
+    },
+    "No active stream. Preferences apply when a device connects.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No active stream. Preferences apply when a device connects."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前没有正在传输的设备。设备连接后会使用这里的设置。"
+          }
+        }
+      }
+    },
+    "Negotiated dimensions and rate can be lower than your selection. The bitrate target is an encoder budget; live traffic varies with screen content.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negotiated dimensions and rate can be lower than your selection. The bitrate target is an encoder budget; live traffic varies with screen content."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "协商后的分辨率和帧率上限可能低于所选值。目标码率是编码预算；实时流量会随画面内容变化。"
+          }
+        }
+      }
+    },
+    "Application & display layout": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Application & display layout"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用与屏幕排列"
+          }
+        }
+      }
+    },
+    "Show app in": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show app in"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用显示位置"
+          }
+        }
+      }
+    },
+    "Menu bar": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu bar"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "菜单栏"
+          }
+        }
+      }
+    },
+    "Dock": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dock"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "程序坞"
+          }
+        }
+      }
+    },
+    "Background only": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background only"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在后台运行"
+          }
+        }
+      }
+    },
+    "Arrange Displays…": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrange Displays…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "排列显示器…"
+          }
+        }
+      }
+    },
+    "Keyboard shortcuts and trackpad speed are configured in Settings & Help on the iPad.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard shortcuts and trackpad speed are configured in Settings & Help on the iPad."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键盘快捷键和触控板速度，请在 iPad 端的“设置与帮助”中调整。"
+          }
+        }
+      }
+    },
+    "Permissions & diagnostics": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissions & diagnostics"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "权限与故障排查"
+          }
+        }
+      }
+    },
+    "Screen Recording": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Recording"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屏幕录制"
+          }
+        }
+      }
+    },
+    "Accessibility": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助功能"
+          }
+        }
+      }
+    },
+    "Local Network settings": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local Network settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地网络权限设置"
+          }
+        }
+      }
+    },
+    "Show connection logs": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show connection logs"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看连接日志"
+          }
+        }
+      }
+    },
+    "Open system settings": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open system settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开系统设置"
+          }
+        }
+      }
+    },
+    "Negotiated: %d × %d · up to %d fps · target %d Mbps": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negotiated: %d × %d · up to %d fps · target %d Mbps"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "协商配置：%d × %d · 帧率上限 %d · 目标码率 %d Mbps"
+          }
+        }
+      }
+    },
+    "Live traffic: %.1f Mbps": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live traffic: %.1f Mbps"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时流量：%.1f Mbps"
+          }
+        }
+      }
+    },
+    "Interface language": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface language"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "界面语言"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Follow system": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follow system"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "跟随系统"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Language": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "语言"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Back": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "返回"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Keyboard & trackpad": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard & trackpad"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键盘与触控板"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Swap Command and Option": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swap Command and Option"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "交换 Command 与 Option"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Use Option-Tab / Option-Space for Mac app switching / search when swapping is on. Original Command-Tab / Command-Space still belong to iPadOS.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Option-Tab / Option-Space for Mac app switching / search when swapping is on. Original Command-Tab / Command-Space still belong to iPadOS."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开启交换后，用 Option+Tab 切换 Mac 应用，Option+空格搜索 Mac。原来的 Command+Tab、Command+空格仍由 iPadOS 处理。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Performance overlay": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Performance overlay"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示性能信息"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Metal renderer (experimental)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metal renderer (experimental)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metal 渲染器（实验功能）"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Connect an iPad to adjust its input and performance settings here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect an iPad to adjust its input and performance settings here."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接 iPad 后，可在这里调整它的输入与性能设置。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Changes sync with this iPad. Language and system permissions stay local to each device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes sync with this iPad. Language and system permissions stay local to each device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置会与这台 iPad 同步。界面语言和系统权限由各设备独立管理。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Waiting for iPad settings. Both apps must support settings sync.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for iPad settings. Both apps must support settings sync."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在等待 iPad 设置。Mac 和 iPad 都需要更新到支持设置同步的版本。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Connect an updated Mac app to adjust display settings here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect an updated Mac app to adjust display settings here."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接新版 Mac 应用后，可在这里调整显示模式、分辨率和画质。"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Device name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device name"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备名称"
+          }
+        }
+      },
+      "comment": "OpenDisplay settings and navigation UI. Keep keyboard key names, device names and format placeholders unchanged."
+    },
+    "Native (automatic)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native (automatic)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生（自动匹配）"
+          }
+        }
+      }
+    },
+    "Native · %d × %d (receiver)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native · %d × %d (receiver)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生 · %d × %d（接收设备）"
+          }
+        }
+      }
+    },
+    "Connected device native pixels: %d × %d": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected device native pixels: %d × %d"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前设备原生像素：%d × %d"
+          }
+        }
+      }
+    },
+    "Custom resolution…": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom resolution…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自定义分辨率…"
+          }
+        }
+      }
+    },
+    "Width (pixels)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Width (pixels)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "宽度（像素）"
+          }
+        }
+      }
+    },
+    "Height (pixels)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Height (pixels)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高度（像素）"
+          }
+        }
+      }
+    },
+    "Use device native size": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use device native size"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "填入设备原生尺寸"
+          }
+        }
+      }
+    },
+    "Apply custom resolution": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply custom resolution"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用自定义分辨率"
+          }
+        }
+      }
+    },
+    "Enter 320–8192 pixels per side, in multiples of 4 for exact HiDPI pixels. Orientation follows the receiving device. Editing does not reconnect until Apply.": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter 320–8192 pixels per side, in multiples of 4 for exact HiDPI pixels. Orientation follows the receiving device. Editing does not reconnect until Apply."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每边可填 320–8192 像素，需为 4 的倍数，以保持 HiDPI 像素准确。横竖方向跟随接收设备；点击“应用”后才会重新连接。"
+          }
+        }
+      }
+    },
+    "Enter valid pixel dimensions before applying.": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter valid pixel dimensions before applying."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先填写符合范围和倍数要求的像素宽高。"
+          }
+        }
+      }
+    },
+    "iPad 10.2-inch (9th gen)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad 10.2-inch (9th gen)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad 10.2 英寸（第 9 代）"
+          }
+        }
+      }
+    },
+    "iPad Air 11-inch (M3)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Air 11-inch (M3)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Air 11 英寸（M3）"
+          }
+        }
+      }
+    },
+    "iPad Air 13-inch (M3)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Air 13-inch (M3)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Air 13 英寸（M3）"
+          }
+        }
+      }
+    },
+    "iPad Pro 11-inch (4th gen)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 11-inch (4th gen)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 11 英寸（第 4 代）"
+          }
+        }
+      }
+    },
+    "iPad Pro 11-inch (M4)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 11-inch (M4)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 11 英寸（M4）"
+          }
+        }
+      }
+    },
+    "iPad Pro 12.9-inch (6th gen)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 12.9-inch (6th gen)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 12.9 英寸（第 6 代）"
+          }
+        }
+      }
+    },
+    "iPad Pro 13-inch (M4)": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 13-inch (M4)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad Pro 13 英寸（M4）"
+          }
+        }
+      }
+    },
+    "Mirror display": {
+      "comment": "Selection of an existing Mac capture display, separate from creating an extended desktop. Point dimensions and pixel dimensions must remain distinct.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror display"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "镜像显示屏"
+          }
+        }
+      }
+    },
+    "Waiting for Mac displays…": {
+      "comment": "Selection of an existing Mac capture display, separate from creating an extended desktop. Point dimensions and pixel dimensions must remain distinct.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for Mac displays…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在读取 Mac 显示屏…"
+          }
+        }
+      }
+    },
+    "Selected display unavailable": {
+      "comment": "Selection of an existing Mac capture display, separate from creating an extended desktop. Point dimensions and pixel dimensions must remain distinct.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected display unavailable"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已选显示屏当前不可用"
+          }
+        }
+      }
+    },
+    "Source desktop: %d × %d pt · %d × %d pixels": {
+      "comment": "Selection of an existing Mac capture display, separate from creating an extended desktop. Point dimensions and pixel dimensions must remain distinct.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source desktop: %d × %d pt · %d × %d pixels"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "来源桌面：%d × %d 点 · %d × %d 像素"
+          }
+        }
+      }
+    },
+    "Select an existing physical or virtual Mac display to mirror. This does not create or resize a display. Extend remains a separate mode.": {
+      "comment": "Selection of an existing Mac capture display, separate from creating an extended desktop. Point dimensions and pixel dimensions must remain distinct.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select an existing physical or virtual Mac display to mirror. This does not create or resize a display. Extend remains a separate mode."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择 Mac 上已有的物理显示器或虚拟显示屏作为镜像来源；不会新建或调整显示器。“扩展屏”仍是独立功能。"
+          }
+        }
+      }
+    },
+    "The selected mirror display is unavailable. Choose another display.": {
+      "comment": "Selection of an existing Mac capture display, separate from creating an extended desktop. Point dimensions and pixel dimensions must remain distinct.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected mirror display is unavailable. Choose another display."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选定的镜像显示屏当前不可用，请选择其它显示屏。"
+          }
+        }
+      }
+    },
+    "Native · %d × %d (selected display)": {
+      "comment": "Native pixel dimensions of the selected existing mirror source, not receiver panel dimensions.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native · %d × %d (selected display)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生 · %d × %d（已选显示屏）"
+          }
+        }
+      }
+    },
+    "In Extend mode, presets create a HiDPI desktop at the selected pixels and follow device rotation. Mirror preserves the selected display's pixels and aspect ratio. Device and codec limits may reduce the transmitted size or frame rate.": {
+      "comment": "Resolution picker, connected-device pixel metadata or custom-resolution editor. Dimensions are physical pixels; preserve placeholders and model generations.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Extend mode, presets create a HiDPI desktop at the selected pixels and follow device rotation. Mirror preserves the selected display's pixels and aspect ratio. Device and codec limits may reduce the transmitted size or frame rate."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扩展模式按所选像素创建高清桌面，并随设备旋转交换宽高。镜像保留“镜像显示屏”所选屏幕的像素与比例。设备或编码能力不足时，实际传输尺寸或帧率可能降低。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
