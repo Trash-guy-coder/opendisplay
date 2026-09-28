@@ -18,6 +18,17 @@ final class VirtualCanvasSizingTests: XCTestCase {
                        VirtualCanvasSize(pointsWide: 900, pointsHigh: 1_600))
     }
 
+    func testStandardResolutionKeepsExactPixelsWithoutSmallHiDPI() {
+        let fullHD = VirtualCanvasSizing.plan(pixelsWide: 1920, pixelsHigh: 1080, pixelsPerPoint: 1)!
+        XCTAssertEqual(fullHD.requested.cgSize, CGSize(width: 1920, height: 1080))
+        XCTAssertEqual(fullHD.requested.pixelsWide, 1920)
+        XCTAssertEqual(fullHD.bootstrap.pixelsPerPoint, 1)
+        let hd = VirtualCanvasSizing.plan(pixelsWide: 1280, pixelsHigh: 720, pixelsPerPoint: 1)!
+        XCTAssertEqual(hd.requested, hd.bootstrap)
+        XCTAssertEqual(hd.requested.pixelsHigh, 720)
+        XCTAssertNil(VirtualCanvasSizing.plan(pixelsWide: 1920, pixelsHigh: 1080, pixelsPerPoint: 0))
+    }
+
     func testInvalidCanvasIsRejected() {
         XCTAssertNil(VirtualCanvasSizing.requested(pixelsWide: 1, pixelsHigh: 1_080))
     }

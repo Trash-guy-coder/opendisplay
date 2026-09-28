@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import VideoToolbox
 import UIKit
 import Combine
 
@@ -602,6 +603,8 @@ final class ReceiverModel: ObservableObject {
                                 short: Int(min(native.width, native.height)),
                                 scale: Double(UIScreen.main.nativeScale))
         receiver.setDisplayMaxFrameRate(UIScreen.main.maximumFramesPerSecond)
+        receiver.setDecodeMaxFrameRate(VTIsHardwareDecodeSupported(kCMVideoCodecType_H264)
+            ? min(UIScreen.main.maximumFramesPerSecond, 120) : 60)
         if let budget = DecodeBudget.maxPixelsPerSecond(model: DecodeBudget.currentModel) {
             receiver.setDecodeBudget(maxPixelsPerSecond: budget)
         }

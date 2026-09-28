@@ -105,6 +105,8 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
     private let endpointName: String
     private let mode: CaptureMode
     private let quality: StreamQuality
+    private let resolution: DesktopResolution
+    private let refreshRate: Int
     // Stable per-device serial for the virtual display, so macOS can tell
     // multiple OpenDisplay monitors apart and persist their arrangement.
     private let displaySerial: UInt32
@@ -328,12 +330,14 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
     private var dropReplayTimer: DispatchSourceTimer?
 
     init(transport: SenderTransport, name: String, mode: CaptureMode,
-         quality: StreamQuality = .best, displaySerial: UInt32 = 0x0001,
+         quality: StreamQuality = .best, resolution: DesktopResolution = .native, refreshRate: Int = 60, displaySerial: UInt32 = 0x0001,
          identityOffset: UInt32 = 0, awaitingWake: Bool = false) {
         self.transport = transport
         self.endpointName = name
         self.mode = mode
         self.quality = quality
+        self.resolution = resolution
+        self.refreshRate = refreshRate
         self.displaySerial = displaySerial
         self.baseIdentityOffset = identityOffset
         self.awaitingWake = awaitingWake
@@ -343,7 +347,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
     // MARK: - Lifecycle
 
     func start() async throws {
-        stopped = false
+        guard !stopped else { throw CancellationError() }
         queue.async { self.connect() }   // dial state lives on `queue`
         if !monitorsStarted {
             monitorsStarted = true
@@ -371,9 +375,10 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
             // new fields and retain the existing H.264 behavior.
             let info = try await waitForHello()
             let content = try await SCShareableContent.current
-            guard let display = content.displays.first else {
+            let mainID = MirrorDisplaySelection.select(available: content.displays.map(\.displayID), main: CGMainDisplayID())
+            guard let display = content.displays.first(where: { $0.displayID == mainID }) else {
                 throw NSError(domain: "MacSender", code: 1,
-                              userInfo: [NSLocalizedDescriptionKey: "no displays found"])
+                              userInfo: [NSLocalizedDescriptionKey: String(localized: "The main display is unavailable.", table: "DisplayStrings")])
             }
             // SCDisplay.width/height are POINTS. Capturing at points on a
             // Retina panel discards half the raster before the encoder ever
@@ -423,8 +428,10 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         // The virtual display runs @2x HiDPI. Large modes are applied only
         // after a conservative bootstrap mode is online; some saved macOS
         // display states reject the same mode when it is present at creation.
+        let canvasPixels = resolution.pixels(nativeWidth: info.pixelsWide, nativeHeight: info.pixelsHigh)
         guard let canvasPlan = VirtualCanvasSizing.plan(
-            pixelsWide: info.pixelsWide, pixelsHigh: info.pixelsHigh) else {
+            pixelsWide: canvasPixels.width, pixelsHigh: canvasPixels.height,
+            pixelsPerPoint: resolution == .native ? 2 : 1) else {
             throw NSError(domain: "MacSender", code: 7,
                           userInfo: [NSLocalizedDescriptionKey: "the receiver reported an invalid display size"])
         }
@@ -497,7 +504,8 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
                     // suggests some macOS versions key the hostile state on
                     // the product, not the serial — bumping both escapes
                     // either keying.
-                    return VirtualDisplay(name: displayName,
+                    return VirtualDisplay(name: displayName, refreshRate: Double(refreshRate),
+                                          pixelsPerPoint: resolution == .native ? 2 : 1,
                                           pointsWide: pointsWide, pointsHigh: pointsHigh,
                                           descriptorMaxPixelsPerAxis: canvasPlan.descriptorMaxPixelsPerAxis,
                                           sizeInMillimeters: mm,
@@ -597,8 +605,8 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         try ensureActiveDisplay(vd)
         inputInjector = InputInjector(displayID: vd.displayID)
         try await startCapture(display: captureDisplay,
-                               sourcePixelsWide: vd.pointsWide * 2,
-                               sourcePixelsHigh: vd.pointsHigh * 2,
+                               sourcePixelsWide: vd.pixelsWide,
+                               sourcePixelsHigh: vd.pixelsHigh,
                                receiver: info)
         try ensureActiveDisplay(vd)
 
@@ -635,9 +643,10 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
                 switch mode {
                 case .mirror:
                     let content = try await SCShareableContent.current
-                    guard let display = content.displays.first else {
+                    let mainID = MirrorDisplaySelection.select(available: content.displays.map(\.displayID), main: CGMainDisplayID())
+                    guard let display = content.displays.first(where: { $0.displayID == mainID }) else {
                         throw NSError(domain: "MacSender", code: 1,
-                                      userInfo: [NSLocalizedDescriptionKey: "no display found"])
+                                      userInfo: [NSLocalizedDescriptionKey: String(localized: "The main display is unavailable.", table: "DisplayStrings")])
                     }
                     let displayMode = CGDisplayCopyDisplayMode(display.displayID)
                     try await startCapture(
@@ -690,12 +699,13 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         guard let vd = virtualDisplay else { return false }
         try ensureActiveDisplay(vd)
 
-        let pointsWide = (info.pixelsWide / 2) & ~1
-        let pointsHigh = (info.pixelsHigh / 2) & ~1
+        let selectedPixels = resolution.pixels(nativeWidth: info.pixelsWide, nativeHeight: info.pixelsHigh)
+        let pointsWide = (selectedPixels.width / vd.pixelsPerPoint) & ~1
+        let pointsHigh = (selectedPixels.height / vd.pixelsPerPoint) & ~1
         let arrangementKey = info.id ?? String(format: "serial-%08x", displaySerial)
         let size = CGSize(width: pointsWide, height: pointsHigh)
         let previous = VirtualCanvasSize(pointsWide: vd.pointsWide,
-                                         pointsHigh: vd.pointsHigh)
+                                         pointsHigh: vd.pointsHigh, pixelsPerPoint: vd.pixelsPerPoint)
         let dimensionsChanged = vd.pointsWide != pointsWide || vd.pointsHigh != pointsHigh
         let didResize = if dimensionsChanged {
             await MainActor.run {
@@ -741,8 +751,8 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         }
         try ensureActiveDisplay(vd)
         try await startCapture(display: display,
-                               sourcePixelsWide: pointsWide * 2,
-                               sourcePixelsHigh: pointsHigh * 2,
+                               sourcePixelsWide: pointsWide * vd.pixelsPerPoint,
+                               sourcePixelsHigh: pointsHigh * vd.pixelsPerPoint,
                                receiver: info)
         try ensureActiveDisplay(vd)
         if dimensionsChanged {
@@ -835,12 +845,16 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         } else {
             legacyCeiling = nil
         }
+        let outputPixels = mode == .mirror
+            ? resolution.pixels(nativeWidth: sourcePixelsWide, nativeHeight: sourcePixelsHigh)
+            : PixelSize(width: sourcePixelsWide, height: sourcePixelsHigh)
         let selected = try H264StreamConfiguration.make(
-            source: PixelSize(width: sourcePixelsWide, height: sourcePixelsHigh),
+            source: outputPixels,
             quality: quality,
             legacyCeiling: legacyCeiling,
             receiverCapabilities: info.videoCaps,
-            displayMaxFrameRate: info.displayMaxFrameRate)
+            displayMaxFrameRate: info.displayMaxFrameRate,
+            requestedFramesPerSecond: refreshRate)
         let pixelsWide = selected.encodedSize.width
         let pixelsHigh = selected.encodedSize.height
         let sourceDescription = "\(sourcePixelsWide)x\(sourcePixelsHigh)"
@@ -854,7 +868,7 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         // Ask for 120 even though the virtual display is 60Hz: requesting
         // exactly 1/60 makes SCK's rate limiter skip frames that arrive a
         // hair early (beat frequency) — measured ~51fps instead of 60.
-        config.minimumFrameInterval = CMTime(value: 1, timescale: 120)
+        config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(max(120, selected.framesPerSecond * 2)))
         // 420v matches the encoder's native input — skips a BGRA→YUV conversion
         // inside VideoToolbox. (`-pixfmt bgra` reverts for A/B testing.)
         config.pixelFormat = UserDefaults.standard.string(forKey: "pixfmt") == "bgra"
@@ -911,17 +925,23 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         queue.async { self.captureRecoveryFailures = 0 }
         Log.info("capture started: \(pixelsWide)x\(pixelsHigh) display \(display.displayID) generation \(generation) mode \(mode.rawValue) localCursor=\(localCursor)")
         let kind = lastHello?.kind ?? "device"
-        await status("\(mode == .extend ? "Extending to" : "Mirroring to") \(kind) (\(pixelsWide)×\(pixelsHigh))")
+        await status("\(mode == .extend ? "Extending to" : "Mirroring to") \(kind) (\(pixelsWide)×\(pixelsHigh), \(selected.framesPerSecond) fps target)")
     }
 
-    func stop() {
+    func stopAndWait() async {
+        await withCheckedContinuation { continuation in
+            stop(completion: { continuation.resume() })
+        }
+    }
+
+    func stop(completion: (() -> Void)? = nil) {
         stopped = true
         hardwareInputInjector.setDisplayID(0)
         invalidateCapturePipeline(discardingLastFrame: true)
         stopCursorPositionEcho()
         cursorImageTimer?.cancel()
         cursorImageTimer = nil
-        stream?.stopCapture { _ in }
+        let retiringStream = stream
         stream = nil
         connection?.cancel()
         connection = nil
@@ -941,6 +961,9 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
             self?.helloContinuation?.resume(throwing: CancellationError())
             self?.helloContinuation = nil
         }
+        if let retiringStream {
+            retiringStream.stopCapture { _ in completion?() }
+        } else { completion?() }
     }
 
     /// Migrate the live session to another transport: swap the socket under
@@ -1126,8 +1149,8 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
                         // Capture at the display's pixel resolution (points ×2 @2x),
                         // not SCDisplay.width (logical points) — matches setupExtend.
                         try await self.startCapture(display: display,
-                                                    sourcePixelsWide: vd.pointsWide * 2,
-                                                    sourcePixelsHigh: vd.pointsHigh * 2,
+                                                    sourcePixelsWide: vd.pixelsWide,
+                                                    sourcePixelsHigh: vd.pixelsHigh,
                                                     receiver: hello)
                         self.needsKeyframe = true
                     } catch {

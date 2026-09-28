@@ -4,8 +4,14 @@ struct VirtualCanvasSize: Equatable {
     let pointsWide: Int
     let pointsHigh: Int
 
-    var pixelsWide: Int { pointsWide * 2 }
-    var pixelsHigh: Int { pointsHigh * 2 }
+    let pixelsPerPoint: Int
+    init(pointsWide: Int, pointsHigh: Int, pixelsPerPoint: Int = 2) {
+        self.pointsWide = pointsWide
+        self.pointsHigh = pointsHigh
+        self.pixelsPerPoint = pixelsPerPoint
+    }
+    var pixelsWide: Int { pointsWide * pixelsPerPoint }
+    var pixelsHigh: Int { pointsHigh * pixelsPerPoint }
     var cgSize: CGSize { CGSize(width: pointsWide, height: pointsHigh) }
 }
 
@@ -25,9 +31,9 @@ enum VirtualCanvasSizing {
     private static let bootstrapShortEdgePoints = 900
     private static let reservedPixelsPerAxis = 8_192
 
-    static func plan(pixelsWide: Int, pixelsHigh: Int) -> VirtualCanvasPlan? {
+    static func plan(pixelsWide: Int, pixelsHigh: Int, pixelsPerPoint: Int = 2) -> VirtualCanvasPlan? {
         guard let requested = requested(pixelsWide: pixelsWide,
-                                        pixelsHigh: pixelsHigh) else { return nil }
+                                        pixelsHigh: pixelsHigh, pixelsPerPoint: pixelsPerPoint) else { return nil }
         return VirtualCanvasPlan(
             requested: requested,
             bootstrap: bootstrap(for: requested),
@@ -36,12 +42,12 @@ enum VirtualCanvasSizing {
                                              requested.pixelsHigh))
     }
 
-    static func requested(pixelsWide: Int, pixelsHigh: Int) -> VirtualCanvasSize? {
-        guard pixelsWide >= 4, pixelsHigh >= 4 else { return nil }
-        let width = (pixelsWide / 2) & ~1
-        let height = (pixelsHigh / 2) & ~1
+    static func requested(pixelsWide: Int, pixelsHigh: Int, pixelsPerPoint: Int = 2) -> VirtualCanvasSize? {
+        guard [1, 2].contains(pixelsPerPoint), pixelsWide >= 4, pixelsHigh >= 4 else { return nil }
+        let width = (pixelsWide / pixelsPerPoint) & ~1
+        let height = (pixelsHigh / pixelsPerPoint) & ~1
         guard width >= 2, height >= 2 else { return nil }
-        return VirtualCanvasSize(pointsWide: width, pointsHigh: height)
+        return VirtualCanvasSize(pointsWide: width, pointsHigh: height, pixelsPerPoint: pixelsPerPoint)
     }
 
     static func bootstrap(for requested: VirtualCanvasSize) -> VirtualCanvasSize {
@@ -53,6 +59,7 @@ enum VirtualCanvasSizing {
         guard scale < 1 else { return requested }
         return VirtualCanvasSize(
             pointsWide: max(2, Int(Double(requested.pointsWide) * scale) & ~1),
-            pointsHigh: max(2, Int(Double(requested.pointsHigh) * scale) & ~1))
+            pointsHigh: max(2, Int(Double(requested.pointsHigh) * scale) & ~1),
+            pixelsPerPoint: requested.pixelsPerPoint)
     }
 }
