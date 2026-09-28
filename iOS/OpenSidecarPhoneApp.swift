@@ -821,6 +821,7 @@ struct VideoLayerView: UIViewRepresentable {
         private var cursorNormSize = CGSize.zero
         private var cursorNorm = CGPoint(x: 0.5, y: 0.5)
         private var cursorVisible = false
+
         private var lastLoggedLayout = ""
 
         override func layoutSubviews() {
