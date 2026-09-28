@@ -210,6 +210,7 @@ final class StreamReceiver: ObservableObject {
     private(set) var devicePixelsHigh = 0
     var deviceScale: Double = 2
     private var displayMaxFrameRate = 60
+    private var decodeMaxFrameRate = 60
     // Name advertised over Bonjour for the Mac's WiFi picker. iOS 16+ returns
     // a generic "iPhone" from UIDevice.current.name (the user-assigned name
     // needs an entitlement Apple gates behind approval and personal teams
@@ -305,6 +306,15 @@ final class StreamReceiver: ObservableObject {
         let value = pixelsPerSecond.map { max(4, $0) }
         guard value != maxPixelsPerSecond else { return }
         maxPixelsPerSecond = value
+        if let connection { sendHello(on: connection) }
+    }
+
+    /// An experimental high-rate decoder ceiling. Display and throughput
+    /// constraints still apply independently in the sender's joint selection.
+    func setDecodeMaxFrameRate(_ framesPerSecond: Int) {
+        let value = min(max(framesPerSecond, 1), 120)
+        guard value != decodeMaxFrameRate else { return }
+        decodeMaxFrameRate = value
         if let connection { sendHello(on: connection) }
     }
 
@@ -891,7 +901,7 @@ final class StreamReceiver: ObservableObject {
         ]
         // Additive joint capability. The legacy rectangle below stays on the
         // wire while independently updated senders remain in the field.
-        var h264: [String: Any] = ["codec": "h264", "maxFrameRate": 60]
+        var h264: [String: Any] = ["codec": "h264", "maxFrameRate": decodeMaxFrameRate]
         if let maxEncodeWide, let maxEncodeHigh {
             h264["maxWidth"] = maxEncodeWide
             h264["maxHeight"] = maxEncodeHigh
