@@ -110,7 +110,6 @@ targets:
       - Shared
       - Mac/Log.swift
       - Mac/LogPolicies.swift
-      - Mac/CursorSpriteStabilizer.swift
       - Mac/CheckForUpdatesView.swift
     dependencies:
       - package: Sparkle
