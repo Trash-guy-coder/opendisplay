@@ -1,14 +1,14 @@
 import Foundation
 
-/// Capture-resolution / bitrate trade-off. The virtual display always runs at
-/// native size — only the captured/encoded stream is scaled, so lower presets
+/// Capture-resolution / bitrate trade-off. The virtual display runs
+/// at the selected desktop size — only the captured/encoded stream is scaled, so lower presets
 /// cut encode, transmit, and decode work at the cost of sharpness.
 enum StreamQuality: String, CaseIterable {
-    case best, balanced, fast
+    case ultra, best, balanced, fast
 
     var scale: Double {
         switch self {
-        case .best: return 1.0
+        case .ultra, .best: return 1.0
         case .balanced: return 0.75
         case .fast: return 0.5
         }
@@ -16,25 +16,36 @@ enum StreamQuality: String, CaseIterable {
 
     var bitrate: Int {
         switch self {
+        case .ultra: return 24_000_000
         case .best: return 18_000_000
         case .balanced: return 10_000_000
         case .fast: return 6_000_000
         }
     }
 
+    /// The opt-in detail preset budgets the negotiated raster/rate, not a
+    /// possibly much larger requested mode. Existing quality budgets stay put.
+    func bitrate(for size: PixelSize, framesPerSecond: Int) -> Int {
+        guard self == .ultra else { return bitrate }
+        let desired = Double(size.width) * Double(size.height) * Double(framesPerSecond) * 0.20
+        return Int(min(80, max(24, (desired / 1_000_000).rounded(.up)))) * 1_000_000
+    }
+
     var label: String {
         switch self {
-        case .best: return "Best"
-        case .balanced: return "Balanced"
-        case .fast: return "Fast"
+        case .ultra: return String(localized: "Ultra detail", table: "DisplayStrings")
+        case .best: return String(localized: "Best", table: "DisplayStrings")
+        case .balanced: return String(localized: "Balanced", table: "DisplayStrings")
+        case .fast: return String(localized: "Fast", table: "DisplayStrings")
         }
     }
 
     var explanation: String {
         switch self {
-        case .best: return "Highest safe detail for this sender and display."
-        case .balanced: return "Lower capture resolution for less latency and bandwidth."
-        case .fast: return "Lowest latency and bandwidth, with a softer image. Good for WiFi."
+        case .ultra: return String(localized: "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection.", table: "DisplayStrings")
+        case .best: return String(localized: "Full resolution with a standard bitrate.", table: "DisplayStrings")
+        case .balanced: return String(localized: "Lower capture resolution for less latency and bandwidth.", table: "DisplayStrings")
+        case .fast: return String(localized: "Lowest latency and bandwidth, with a softer image. Good for WiFi.", table: "DisplayStrings")
         }
     }
 }
@@ -146,7 +157,7 @@ struct H264StreamConfiguration: Equatable {
             guard fps > 0 else { return nil }
             fps = safeH264FrameRate(width: size.width, height: size.height,
                                     requested: fps)
-            return Self(encodedSize: size, bitrate: quality.bitrate,
+            return Self(encodedSize: size, bitrate: quality.bitrate(for: size, framesPerSecond: fps),
                         framesPerSecond: fps)
         }
 

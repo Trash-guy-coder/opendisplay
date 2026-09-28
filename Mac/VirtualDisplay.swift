@@ -13,6 +13,10 @@ final class VirtualDisplay {
 
     private let display: CGVirtualDisplay
     private var settings: CGVirtualDisplaySettings
+    private let refreshRate: Double
+    let pixelsPerPoint: Int
+    var pixelsWide: Int { pointsWide * pixelsPerPoint }
+    var pixelsHigh: Int { pointsHigh * pixelsPerPoint }
     private let maxPointsPerAxis: Int
     private(set) var pointsWide: Int
     private(set) var pointsHigh: Int
@@ -31,21 +35,23 @@ final class VirtualDisplay {
     /// `restoreOrigin` overrides that saved arrangement (see manageOrigin);
     /// `onOriginChange` reports where the display sits afterwards, so the
     /// caller can persist user drags.
-    init?(name: String, pointsWide: Int, pointsHigh: Int,
+    init?(name: String, refreshRate: Double = 60, pixelsPerPoint: Int = 2, pointsWide: Int, pointsHigh: Int,
           descriptorMaxPixelsPerAxis: Int, sizeInMillimeters: CGSize,
           serialNum: UInt32 = 0x0001, productID: UInt32 = 0x4F53,
           restoreOrigin: CGPoint? = nil,
           onOriginChange: ((CGPoint, CGSize) -> Void)? = nil) {
+        self.refreshRate = refreshRate
+        self.pixelsPerPoint = pixelsPerPoint
         self.pointsWide = pointsWide
         self.pointsHigh = pointsHigh
         // Reserve the longer orientation on both axes. The fixed headroom also
         // covers later receiver scaling changes (for example Larger Text to
         // More Space) without destroying and recreating the virtual display.
-        let initialPixelsPerAxis = max(pointsWide, pointsHigh) * 2
+        let initialPixelsPerAxis = max(pointsWide, pointsHigh) * pixelsPerPoint
         let maximumPixelsPerAxis = max(initialPixelsPerAxis,
                                        descriptorMaxPixelsPerAxis,
                                        Self.reservedPixelsPerAxis)
-        maxPointsPerAxis = (maximumPixelsPerAxis + 1) / 2
+        maxPointsPerAxis = (maximumPixelsPerAxis + pixelsPerPoint - 1) / pixelsPerPoint
         self.restoreTarget = restoreOrigin
         self.restoreUntil = restoreOrigin == nil ? .distantPast : Date().addingTimeInterval(6)
         self.onOriginChange = onOriginChange
@@ -53,8 +59,8 @@ final class VirtualDisplay {
         let descriptor = CGVirtualDisplayDescriptor()
         descriptor.setDispatchQueue(DispatchQueue.main)
         descriptor.name = name
-        descriptor.maxPixelsWide = UInt32(maxPointsPerAxis * 2)
-        descriptor.maxPixelsHigh = UInt32(maxPointsPerAxis * 2)
+        descriptor.maxPixelsWide = UInt32(maxPointsPerAxis * pixelsPerPoint)
+        descriptor.maxPixelsHigh = UInt32(maxPointsPerAxis * pixelsPerPoint)
         descriptor.sizeInMillimeters = sizeInMillimeters
         descriptor.productID = productID   // base 0x4F53 "OS"; moves with the
                                            // serial when an identity is
@@ -68,15 +74,15 @@ final class VirtualDisplay {
         display = CGVirtualDisplay(descriptor: descriptor)
 
         settings = CGVirtualDisplaySettings()
-        settings.hiDPI = 1
+        settings.hiDPI = pixelsPerPoint == 2 ? 1 : 0
         settings.modes = [
-            CGVirtualDisplayMode(width: UInt(pointsWide), height: UInt(pointsHigh), refreshRate: 60)
+            CGVirtualDisplayMode(width: UInt(pointsWide), height: UInt(pointsHigh), refreshRate: refreshRate)
         ]
         guard display.apply(settings) else {
             Log.info("CGVirtualDisplay applySettings FAILED")
             return nil
         }
-        Log.info("virtual display created: id=\(display.displayID) \(pointsWide)x\(pointsHigh)pt @2x")
+        Log.info("virtual display created: id=\(display.displayID) \(pointsWide)x\(pointsHigh)pt @\(pixelsPerPoint)x")
 
         // macOS defaults the new display to its 1x mode AND can restore a
         // stale saved mode for this serial asynchronously, seconds after the
@@ -116,9 +122,9 @@ final class VirtualDisplay {
         }
 
         let newSettings = CGVirtualDisplaySettings()
-        newSettings.hiDPI = 1
+        newSettings.hiDPI = pixelsPerPoint == 2 ? 1 : 0
         newSettings.modes = [
-            CGVirtualDisplayMode(width: UInt(pointsWide), height: UInt(pointsHigh), refreshRate: 60)
+            CGVirtualDisplayMode(width: UInt(pointsWide), height: UInt(pointsHigh), refreshRate: refreshRate)
         ]
         guard display.apply(newSettings) else {
             Log.info("virtual display \(display.displayID) applySettings FAILED during resize")
@@ -176,7 +182,8 @@ final class VirtualDisplay {
         let opts = [kCGDisplayShowDuplicateLowResolutionModes: kCFBooleanTrue] as CFDictionary
         guard let modes = CGDisplayCopyAllDisplayModes(display.displayID, opts) as? [CGDisplayMode],
               let hidpi = modes.first(where: {
-                  $0.width == pointsWide && $0.pixelWidth == pointsWide * 2
+                  $0.width == pointsWide && $0.height == pointsHigh
+                      && $0.pixelWidth == pointsWide * pixelsPerPoint
               }) else {
             if recover {
                 // Same back-off as a refusal: a mode list that stays without

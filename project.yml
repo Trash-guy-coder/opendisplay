@@ -164,6 +164,9 @@ targets:
       - Mac/LogPolicies.swift
       - Shared/Protocol.swift
       - Shared/LogSnapshot.swift
+      - Mac/DisplayOptions.swift
+      - Shared/DisplayLocalization.swift
+      - Shared/DisplayStrings.xcstrings
       - MacReceiver/FullscreenPreference.swift
     settings:
       base:

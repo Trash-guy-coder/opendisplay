@@ -189,12 +189,28 @@ final class SenderController: ObservableObject {
     @Published var host = UserDefaults.standard.string(forKey: "host") ?? "127.0.0.1"
     @Published var port = UserDefaults.standard.string(forKey: "port") ?? "9000"
     // `-mode mirror` / `-mode extend` launch argument also works.
-    @Published var mode = CaptureMode(rawValue: UserDefaults.standard.string(forKey: "mode") ?? "") ?? .extend
+    @Published var mode = CaptureMode(rawValue: UserDefaults.standard.string(forKey: "mode") ?? "") ?? .extend {
+        didSet { UserDefaults.standard.set(mode.rawValue, forKey: "mode") }
+    }
+    @Published var resolution = DesktopResolution(rawValue: UserDefaults.standard.string(forKey: "resolution") ?? "") ?? .native {
+        didSet { UserDefaults.standard.set(resolution.rawValue, forKey: "resolution") }
+    }
+    @Published var refreshRate = DisplayRefreshRate(rawValue: UserDefaults.standard.integer(forKey: "refreshRate")) ?? .hz60 {
+        didSet { UserDefaults.standard.set(refreshRate.rawValue, forKey: "refreshRate") }
+    }
+    @Published var lowLatencyCursor = UserDefaults.standard.object(forKey: "localCursor") == nil
+        || UserDefaults.standard.bool(forKey: "localCursor") {
+        didSet { UserDefaults.standard.set(lowLatencyCursor, forKey: "localCursor") }
+    }
+    private var restartTask: Task<Void, Never>?
+    private var restarting = false
+    private var restartTargets: [ConnectionTarget] = []
+    private var restartRevision = 0
     @Published var quality = StreamQuality(rawValue: UserDefaults.standard.string(forKey: "quality") ?? "") ?? .best {
         didSet { UserDefaults.standard.set(quality.rawValue, forKey: "quality") }
     }
 
-    var running: Bool { !sessions.isEmpty }
+    var running: Bool { restarting || !sessions.isEmpty }
 
     private var browser: NWBrowser?
     private var usbWatcher: UsbmuxDeviceWatcher?
@@ -328,7 +344,7 @@ final class SenderController: ObservableObject {
     // MARK: - Connection policy
 
     private func autoConnect() {
-        guard autoConnectEnabled else { return }
+        guard autoConnectEnabled, !restarting else { return }
         dedupeSessions()
         // The -host/-port escape hatch is an explicit choice — dial it like
         // the wired devices (it joins them, not replaces them).
@@ -489,6 +505,10 @@ final class SenderController: ObservableObject {
 
     func connect(to target: ConnectionTarget, userInitiated: Bool = false,
                  awaitingWake: Bool = false) {
+        guard !restarting else {
+            if userInitiated, !restartTargets.contains(target) { restartTargets.append(target) }
+            return
+        }
         let id = target.sessionID
         if let existing = session(for: id) {
             // A failed session holds no pipeline — replace the corpse
@@ -541,7 +561,7 @@ final class SenderController: ObservableObject {
 
         let name = label(for: target)
         let sender = MacSender(transport: transport, name: name, mode: mode,
-                               quality: quality, displaySerial: Self.displaySerial(for: id),
+                               quality: quality, resolution: resolution, refreshRate: refreshRate.rawValue, displaySerial: Self.displaySerial(for: id),
                                identityOffset: identityOffset(for: id),
                                awaitingWake: awaitingWake)
         let session = DeviceSession(id: id, target: target, name: name, sender: sender)
@@ -556,7 +576,7 @@ final class SenderController: ObservableObject {
             Log.info("status[\(id)]: \(text)")
         }
         sender.onHello = { [weak self, weak session] info in
-            guard let self, let session else { return }
+            guard let self, let session, self.sessions.contains(where: { $0 === session }) else { return }
             session.deviceID = info.id
             session.deviceKind = info.device
             if case .usb(let udid?) = session.target, let installID = info.id {
@@ -575,7 +595,7 @@ final class SenderController: ObservableObject {
             // Device unplugged / left the network and stayed gone: end this
             // session fully (virtual display + capture + indicator). No
             // transport fallback — reconnecting is the user's call.
-            guard let self, let session else { return }
+            guard let self, let session, self.sessions.contains(where: { $0 === session }) else { return }
             Log.info("device disconnected — session \(session.id) stopped")
             self.end(session)
         }
@@ -585,7 +605,7 @@ final class SenderController: ObservableObject {
             // the session (which frees the cursor from the now-invisible
             // display) is paired with a replacement session that dials
             // patiently until the device wakes and accepts again.
-            guard let self, let session else { return }
+            guard let self, let session, self.sessions.contains(where: { $0 === session }) else { return }
             let target = session.target
             Log.info("session \(session.id) asleep — display down, waiting for wake")
             self.end(session)
@@ -595,7 +615,7 @@ final class SenderController: ObservableObject {
             // The user stopped the capture in the system UI — same intent as
             // the in-app Disconnect, so it also opts the device out of
             // auto-connect (or the next browse event would resurrect it).
-            guard let self, let session else { return }
+            guard let self, let session, self.sessions.contains(where: { $0 === session }) else { return }
             Log.info("session \(session.id) capture stopped via the system UI — honoring as disconnect")
             self.disconnect(session)
         }
@@ -615,7 +635,7 @@ final class SenderController: ObservableObject {
             // The receiver app quit — a deliberate goodbye, so no reconnect
             // waits around. Reopening the app is a fresh start handled by
             // the normal discovery/auto-connect paths.
-            guard let self, let session else { return }
+            guard let self, let session, self.sessions.contains(where: { $0 === session }) else { return }
             Log.info("session \(session.id) closed by the receiver — ending")
             self.end(session)
         }
@@ -651,6 +671,13 @@ final class SenderController: ObservableObject {
     }
 
     func disconnectAll() {
+        for target in restartTargets {
+            switch target {
+            case .usb: usbDisabled.insert(target.sessionID)
+            case .wifi: wifiRemembered.remove(target.sessionID)
+            }
+        }
+        restartTargets.removeAll()
         sessions.forEach { disconnect($0) }
     }
 
@@ -665,17 +692,39 @@ final class SenderController: ObservableObject {
 
     private func end(_ session: DeviceSession) {
         session.sender.stop()
-        sessions.removeAll { $0.id == session.id }
+        sessions.removeAll { $0 === session }
     }
 
-    /// Mode/quality apply per-pipeline at construction — rebuild every session.
+    /// One worker drains the old capture before any replacement is created.
+    /// Further setting changes are coalesced; they never cancel a teardown.
     func restartAll() {
-        guard running else { return }
-        let targets = sessions.map(\.target)
-        sessions.forEach { $0.sender.stop() }
-        sessions.removeAll()
-        targets.forEach { connect(to: $0) }
-        autoConnect()   // a rebuilt WiFi session may deserve its cable back
+        restartRevision += 1
+        guard !restarting else { return }
+        guard !sessions.isEmpty else { return }
+        restartTargets = sessions.map(\.target)
+        restarting = true
+        restartTask = Task { @MainActor in
+            var revision = restartRevision
+            repeat {
+                revision = restartRevision
+                try? await Task.sleep(for: .milliseconds(250))
+            } while revision != restartRevision
+            let retiring = sessions
+            sessions.removeAll()
+            for session in retiring { await session.sender.stopAndWait() }
+            // WindowServer retires a virtual display asynchronously after its
+            // final capture reference is released. Keep the identity unclaimed.
+            repeat {
+                revision = restartRevision
+                try? await Task.sleep(for: .milliseconds(500))
+            } while revision != restartRevision
+            let targets = restartTargets
+            restartTargets.removeAll()
+            restarting = false
+            restartTask = nil
+            targets.forEach { connect(to: $0) }
+            autoConnect()
+        }
     }
 
     // MARK: - Device list (one row per physical device)
@@ -888,6 +937,19 @@ struct ContentView: View {
                 .pickerStyle(.segmented)
                 .onChange(of: controller.mode) { controller.restartAll() }
 
+                Picker(String(localized: "Resolution", table: "DisplayStrings"), selection: $controller.resolution) {
+                    ForEach(DesktopResolution.allCases, id: \.self) { value in Text(value.label).tag(value) }
+                }
+                .onChange(of: controller.resolution) { controller.restartAll() }
+                Picker(String(localized: "Frame-rate limit", table: "DisplayStrings"), selection: $controller.refreshRate) {
+                    ForEach(DisplayRefreshRate.allCases, id: \.self) { value in Text(value.label).tag(value) }
+                }
+                .onChange(of: controller.refreshRate) { controller.restartAll() }
+                Toggle(String(localized: "Low-latency cursor", table: "DisplayStrings"), isOn: $controller.lowLatencyCursor)
+                    .onChange(of: controller.lowLatencyCursor) { controller.restartAll() }
+                Text(String(localized: "The selected rate is limited by receiver, codec and network capabilities. 90/120 Hz is experimental. Mirror resolution changes the stream without changing the main display mode.", table: "DisplayStrings"))
+                    .font(.caption).foregroundStyle(.secondary)
+
                 VStack(alignment: .leading, spacing: 4) {
                     Picker("Quality", selection: $controller.quality) {
                         ForEach(StreamQuality.allCases, id: \.self) { q in
@@ -1042,7 +1104,7 @@ struct SessionRow: View {
                 .frame(width: 9, height: 9)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                Text("\(session.transportLabel) · \(session.status)")
+                Text("\(session.transportLabel) · \(DisplayLocalization.streamStatus(session.status) ?? session.status)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)

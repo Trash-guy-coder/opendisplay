@@ -1,0 +1,312 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Native": {
+      "comment": "Display resolution preset: retain the receiver native pixel dimensions.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生"
+          }
+        }
+      }
+    },
+    "Resolution": {
+      "comment": "Mac sender: virtual desktop or mirror stream resolution picker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resolution"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分辨率"
+          }
+        }
+      }
+    },
+    "Frame-rate limit": {
+      "comment": "Requested maximum streaming frame rate; not measured frame rate.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frame-rate limit"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刷新率上限"
+          }
+        }
+      }
+    },
+    "Low-latency cursor": {
+      "comment": "Mac sender: show the cursor independently of encoded video.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low-latency cursor"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低延迟光标"
+          }
+        }
+      }
+    },
+    "The selected rate is limited by receiver, codec and network capabilities. 90/120 Hz is experimental. Mirror resolution changes the stream without changing the main display mode.": {
+      "comment": "Explanation below display settings. Keep Hz unchanged.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected rate is limited by receiver, codec and network capabilities. 90/120 Hz is experimental. Mirror resolution changes the stream without changing the main display mode."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实际帧率受接收设备、编码和网络能力限制。90/120 Hz 为实验选项。镜像分辨率只改变传输画面，不修改主屏显示模式。"
+          }
+        }
+      }
+    },
+    "The main display is unavailable.": {
+      "comment": "Mirror capture cannot find the main Mac display in ScreenCaptureKit.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The main display is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "主显示器当前不可用。"
+          }
+        }
+      }
+    },
+    "Device": {
+      "comment": "Generic receiving device name when the receiver does not identify its kind.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备"
+          }
+        }
+      }
+    },
+    "Extending to %@ (%lld×%lld, %lld fps target)": {
+      "comment": "Mac connection status. Arguments: device kind, encoded width, encoded height, requested/negotiated fps. Not measured FPS.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extending to %@ (%lld×%lld, %lld fps target)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在扩展到 %@（%lld×%lld，目标 %lld fps）"
+          }
+        }
+      }
+    },
+    "Mirroring to %@ (%lld×%lld, %lld fps target)": {
+      "comment": "Mac connection status. Arguments: device kind, encoded width, encoded height, requested/negotiated fps. Not measured FPS.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirroring to %@ (%lld×%lld, %lld fps target)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在镜像到 %@（%lld×%lld，目标 %lld fps）"
+          }
+        }
+      }
+    },
+    "Ultra detail": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ultra detail"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "超清（高码率）"
+          }
+        }
+      }
+    },
+    "Best": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清晰（标准码率）"
+          }
+        }
+      }
+    },
+    "Balanced": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanced"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "均衡"
+          }
+        }
+      }
+    },
+    "Fast": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fast"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "流畅"
+          }
+        }
+      }
+    },
+    "Full resolution with a standard bitrate.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full resolution with a standard bitrate."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留完整分辨率，使用标准码率。"
+          }
+        }
+      }
+    },
+    "Lower capture resolution for less latency and bandwidth.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lower capture resolution for less latency and bandwidth."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低传输分辨率，减少延迟和带宽占用。"
+          }
+        }
+      }
+    },
+    "Lowest latency and bandwidth, with a softer image. Good for WiFi.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lowest latency and bandwidth, with a softer image. Good for WiFi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "优先降低延迟和带宽占用，画面略柔和，适合网络较慢时使用。"
+          }
+        }
+      }
+    },
+    "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection.": {
+      "comment": "Mac settings window and high-resolution quality controls.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full resolution with a higher adaptive bitrate (24–80 Mbps target). Uses more bandwidth; start with 60 Hz on a stable connection."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留完整分辨率，并提高编码码率（目标 24–80 Mbps）。带宽占用更高，建议先在稳定连接下选择 60 Hz。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
