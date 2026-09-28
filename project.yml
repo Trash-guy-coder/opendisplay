@@ -110,6 +110,7 @@ targets:
       - Shared
       - Mac/Log.swift
       - Mac/LogPolicies.swift
+      - Mac/CursorSpriteStabilizer.swift
       - Mac/CheckForUpdatesView.swift
     dependencies:
       - package: Sparkle
@@ -150,12 +151,12 @@ targets:
     deploymentTarget: "14.0"
     sources:
       - MacTests
-      - Mac/CursorSpriteStabilizer.swift
       - Mac/DisplayArrangement.swift
       - Mac/StreamConfiguration.swift
       - Mac/VirtualCanvasSizing.swift
       - Mac/Log.swift
       - Mac/LogPolicies.swift
+      - Mac/CursorSpriteStabilizer.swift
       - Shared/Protocol.swift
       - Shared/LogSnapshot.swift
       - MacReceiver/FullscreenPreference.swift
@@ -188,9 +189,9 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen: {}
         UIRequiresFullScreen: true
-        CADisableMinimumFrameDurationOnPhone: true
         NSLocalNetworkUsageDescription: OpenDisplay advertises itself on the local network so your Mac can connect over WiFi.
         NSBonjourServices: ["_opensidecar._tcp"]
+        CADisableMinimumFrameDurationOnPhone: true
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
