@@ -1896,7 +1896,10 @@ final class MacSender: NSObject, SCStreamOutput, SCStreamDelegate {
         let image = cursor.image
         guard let tiff = image.tiffRepresentation else { return }
         let hash = tiff.hashValue ^ Int(displaySize.width) &* 31
-        guard cursorSpriteStabilizer.shouldPublish(hash, at: ProcessInfo.processInfo.systemUptime),
+        // A reconnect clears the sent hash even if the system cursor is unchanged.
+        // Reset the stabilizer too, so the fresh peer receives a sprite immediately.
+        guard cursorSpriteStabilizer.shouldPublish(hash, at: ProcessInfo.processInfo.systemUptime,
+                                                  force: lastCursorPNGHash == 0),
               hash != lastCursorPNGHash else { return }
         guard let rep = NSBitmapImageRep(data: tiff),
               let png = rep.representation(using: .png, properties: [:]),

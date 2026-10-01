@@ -10,8 +10,13 @@ struct CursorSpriteStabilizer {
 
     init(settleTime: TimeInterval = 0.09) { self.settleTime = settleTime }
 
-    mutating func shouldPublish(_ hash: Int, at time: TimeInterval) -> Bool {
+    mutating func shouldPublish(_ hash: Int, at time: TimeInterval, force: Bool = false) -> Bool {
         guard time.isFinite else { return false }
+        if force {
+            accepted = nil
+            candidate = nil
+            candidateSince = 0
+        }
         guard accepted != nil else { accepted = hash; return true }
         if accepted == hash { candidate = nil; return false }
         if candidate != hash {

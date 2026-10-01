@@ -26,4 +26,21 @@ final class CursorSpriteStabilizerTests: XCTestCase {
         XCTAssertTrue(policy.shouldPublish(2, at: 0.2))
         XCTAssertFalse(policy.shouldPublish(3, at: .nan))
     }
+    func testReconnectImmediatelyResendsUnchangedSprite() {
+        var policy = CursorSpriteStabilizer()
+        XCTAssertTrue(policy.shouldPublish(1, at: 0))
+        XCTAssertFalse(policy.shouldPublish(1, at: 1))
+        XCTAssertTrue(policy.shouldPublish(1, at: 2, force: true))
+        XCTAssertFalse(policy.shouldPublish(1, at: 2.01))
+    }
+
+    func testReconnectDiscardsPendingTransition() {
+        var policy = CursorSpriteStabilizer()
+        XCTAssertTrue(policy.shouldPublish(1, at: 0))
+        XCTAssertFalse(policy.shouldPublish(2, at: 0.01))
+        XCTAssertTrue(policy.shouldPublish(3, at: 0.02, force: true))
+        XCTAssertFalse(policy.shouldPublish(2, at: 1))
+        XCTAssertFalse(policy.shouldPublish(2, at: 1.05))
+        XCTAssertTrue(policy.shouldPublish(2, at: 1.1))
+    }
 }
